@@ -1,20 +1,34 @@
 from flask import Flask, request, render_template, redirect, session, url_for, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timedelta
+from forms import EditTaskForm, LoginForm, RegisterForm
+from dotenv import load_dotenv
+import jwt
+import requests
+import os
 
 app = Flask(__name__)
-app.secret_key = "secretive_Key"
+app.config["SECRET_KEY"] = 'superSecretKey'
+
+# Load environment variables from .env file
+load_dotenv()
 
 # SQLAlchemy setup
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///user.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
+# Mailgun Configuration (Replace these with your Mailgun credentials)
+MAILGUN_DOMAIN = os.getenv("MAILGUN_DOMAIN")
+MAILGUN_API_KEY = os.getenv("MAILGUN_API_KEY")
+SENDER_EMAIL = os.getenv("SENDER_EMAIL")
+
 # User Model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False, unique=True)
+    email = db.Column(db.String(100), nullable=False, unique=True)
     password_hash = db.Column(db.String(100), nullable=False)
 
     def set_password(self, password):
@@ -40,14 +54,84 @@ class Comment(db.Model):
 
 # Initialize the database
 with app.app_context():
+    # db.drop_all()  # Drop all tables (for development purposes)
     db.create_all()
 
+# Mailgun email-sending function
+def send_mailgun_email(recipient, subject, body):
+    """Send an email using Mailgun."""
+    response = requests.post(
+        f"https://api.mailgun.net/v3/{MAILGUN_DOMAIN}/messages",
+        auth=("api", MAILGUN_API_KEY),
+        data={
+            "from": f"Password Reset <{SENDER_EMAIL}>",
+            "to": recipient,
+            "subject": subject,
+            "text": body
+        }
+    )
+    print(f"Status Code: {response.status_code}")
+    print(f"Response Body: {response.text}")
+    return response
+
+# Password Reset Request Route
+@app.route("/reset_request", methods=["GET", "POST"])
+def reset_request():
+    if request.method == "POST":
+        email = request.form.get("email")
+        user = User.query.filter_by(email=email).first()
+        if user:
+            token = jwt.encode(
+                {
+                    'user_id': user.id,
+                    'exp': datetime.utcnow() + timedelta(hours=1)
+                },
+                app.secret_key,
+                algorithm="HS256"
+            )
+            reset_url = url_for("reset_password", token=token, _external=True)
+            response = send_mailgun_email(
+                recipient=email,
+                subject="Password Reset Request",
+                body=f"Click the following link to reset your password:\n{reset_url}"
+            )
+            if response.status_code == 200:
+                flash("A password reset link has been sent to your email.")
+            else:
+                flash("Failed to send password reset email. Please try again.")
+        else:
+            flash("No account found with that email.")
+        return redirect(url_for("home"))
+    return render_template("resetRequest.html")
+
+# Reset Password Route
+@app.route("/reset_password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    try:
+        payload = jwt.decode(token, app.secret_key, algorithms=["HS256"])
+        user_id = payload.get("user_id")
+    except jwt.ExpiredSignatureError:
+        flash("The reset link has expired.")
+        return redirect(url_for("reset_request"))
+    except jwt.InvalidTokenError:
+        flash("Invalid reset link.")
+        return redirect(url_for("reset_request"))
+
+    user = User.query.get_or_404(user_id)
+    if request.method == "POST":
+        new_password = request.form.get("password")
+        user.set_password(new_password)
+        db.session.commit()
+        flash("Your password has been reset successfully!")
+        return redirect(url_for("home"))
+    return render_template("resetPassword.html", token=token)
+
 # Home Route
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def home():
-    if "username" in session:
-        return redirect(url_for("dashboard"))
-    return render_template("index.html")
+    login_form = LoginForm()
+    register_form = RegisterForm()
+    return render_template("index.html", login_form=login_form, register_form=register_form)
 
 # Login Route
 @app.route("/login", methods=["POST"])
@@ -67,21 +151,24 @@ def login():
 # Register Route
 @app.route("/register", methods=["POST"])
 def register():
-    username = request.form.get("username")
-    password = request.form.get("password")
-    user = User.query.filter_by(username=username).first()
+    form = RegisterForm()
+    if form.validate_on_submit():  # Validate the form
+        username = form.username.data
+        email = form.email.data
+        password = form.password.data
 
-    if user:
-        flash("Username already exists. Please choose another.")
-        return redirect(url_for("home"))
-    else:
-        new_user = User(username=username)
-        new_user.set_password(password)
-        db.session.add(new_user)
-        db.session.commit()
-        session["username"] = username
-        session["user_id"] = new_user.id
-        return redirect(url_for("dashboard"))
+        user = User.query.filter_by(username=username).first()
+        if user:
+            flash("Username already exists. Please choose another.")
+        else:
+            new_user = User(username=username, email=email)  # Include email
+            new_user.set_password(password)
+            db.session.add(new_user)
+            db.session.commit()
+            session["username"] = username
+            session["user_id"] = new_user.id
+            return redirect(url_for("dashboard"))
+    return render_template("register.html", form=form)
 
 # Dashboard Route
 @app.route("/dashboard")
@@ -104,17 +191,22 @@ def add_todo():
         return redirect(url_for("dashboard"))
     return redirect(url_for("home"))
 
+# Edit To-Do Route
 @app.route("/edit/<int:id>", methods=["GET", "POST"])
 def edit_todo(id):
     if "username" in session:
         task = Todo.query.get_or_404(id)
         if task.user_id == session["user_id"]:  # Ensure the user owns the task
-            if request.method == "POST":
-                task.content = request.form.get("content")
+            form = EditTaskForm(obj=task)  # Pre-populate the form with the task's content
+            
+            if form.validate_on_submit():
+                task.content = form.content.data
                 db.session.commit()
                 return redirect(url_for("dashboard"))
-            return render_template("edit.html", task=task)
+            
+            return render_template("edit.html", task=task, form=form)
     return redirect(url_for("home"))
+
 
 
 # Delete Task Route
