@@ -22,21 +22,18 @@
                 <th>Comments</th>
             </tr>
             {% for task in tasks %}
-            <tr>
-                <td>{{ task.content }}</td>
-                <td>{{ task.created.strftime("%Y-%m-%d") }}</td>
-                <td>
-                    <a href="{{ url_for('delete_todo', id=task.id) }}">Delete</a>
-                    <br>
-                    <a href="{{ url_for('edit_todo', id=task.id) }}">Edit</a>
-                </td>
-                <td>
-                    <!-- Task Comments Section -->
-                    <div class="comments">
-                        <h4>Comments:</h4>
-                        {% if task.comments | length < 1 %}
-                            <p>No comments yet. Be the first to comment!</p>
-                        {% else %}
+                <tr>
+                    <td>{{ task.content }}</td>
+                    <td>{{ task.created.strftime("%Y-%m-%d") }}</td>
+                    <td>
+                        <a href="{{ url_for('delete_todo', id=task.id) }}">Delete</a>
+                        <br>
+                        <a href="{{ url_for('edit_todo', id=task.id) }}">Edit</a>
+                    </td>
+                    <td>
+                        <!-- Task Comments Section -->
+                        <div class="comments">
+                            <h4>Comments:</h4>
                             <ul>
                                 {% for comment in task.comments %}
                                 <li id="comment-{{ comment.id }}">
@@ -45,24 +42,20 @@
                                 </li>
                                 {% endfor %}
                             </ul>
-                        {% endif %}
-                        <!-- Comment Form -->
-                        <form action="{{ url_for('add_comment', task_id=task.id) }}" method="POST">
-                            <textarea name="comment" placeholder="Add a comment..." required></textarea>
-                            <button type="submit">Post Comment</button>
-                        </form>
-                    </div>
-                </td>
-            </tr>
+                            <!-- Comment Form -->
+                            <form action="{{ url_for('add_comment', task_id=task.id) }}" method="POST">
+                                <textarea name="comment" placeholder="Add a comment..." required></textarea>
+                                <button type="submit">Post Comment</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
             {% endfor %}
         </table>
     {% endif %}
 
-    <!-- Add Task Form with Error Handling -->
+    <!-- Add Task Form -->
     <form action="{{ url_for('add_todo') }}" method="POST">
-        {% if error_message %}
-            <p style="color: red;">{{ error_message }}</p>
-        {% endif %}
         <input type="text" name="content" id="content" placeholder="Add a new task" required>
         <input type="submit" value="Add Task" id="btn_add">
     </form>
