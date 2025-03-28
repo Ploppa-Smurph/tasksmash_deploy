@@ -1,4 +1,11 @@
 /* General Styles */
+.error {
+    color: red;
+}
+.success {
+    color: green;
+}
+
 body {
     font-family: 'Poppins', sans-serif; /* Modern font */
     background: linear-gradient(135deg, #f5f5dc, #e0d3b8); /* Gradient background */

@@ -43,14 +43,16 @@ class Todo(db.Model):
     content = db.Column(db.String(200), nullable=False)
     created = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    comments = db.relationship('Comment', backref='task', lazy=True, cascade="all, delete-orphan")
 
 # Comment Model
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    content = db.Column(db.Text, nullable=False)
+    content = db.Column(db.String(500), nullable=False)
     created = db.Column(db.DateTime, default=datetime.utcnow)
-    task_id = db.Column(db.Integer, db.ForeignKey('todo.id'), nullable=False)
+    task_id = db.Column(db.Integer, db.ForeignKey('todo.id', ondelete='CASCADE'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user = db.relationship('User', backref='comments')
 
 # Initialize the database
 with app.app_context():
@@ -134,7 +136,7 @@ def home():
     return render_template("index.html", login_form=login_form, register_form=register_form)
 
 # Login Route
-@app.route("/login", methods=["POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     username = request.form.get("username")
     password = request.form.get("password")
@@ -149,7 +151,7 @@ def login():
         return redirect(url_for("home"))
 
 # Register Route
-@app.route("/register", methods=["POST"])
+@app.route("/register", methods=["GET", "POST"])
 def register():
     form = RegisterForm()
     if form.validate_on_submit():  # Validate the form
@@ -157,25 +159,42 @@ def register():
         email = form.email.data
         password = form.password.data
 
-        user = User.query.filter_by(username=username).first()
-        if user:
-            flash("Username already exists. Please choose another.")
+        # Check if the username or email already exists
+        existing_user_by_username = User.query.filter_by(username=username).first()
+        existing_user_by_email = User.query.filter_by(email=email).first()
+
+        if existing_user_by_username:
+            flash("Username already exists. Please choose another.", "error")
+        elif existing_user_by_email:
+            flash("An account already exists with this email. Please login or reset your password.", "error")
         else:
-            new_user = User(username=username, email=email)  # Include email
-            new_user.set_password(password)
+            # Create a new user
+            new_user = User(username=username, email=email)
+            new_user.set_password(password)  # Assume this hashes the password securely
             db.session.add(new_user)
             db.session.commit()
+
+            # Log the user in after successful registration
             session["username"] = username
             session["user_id"] = new_user.id
             return redirect(url_for("dashboard"))
+
+    # Render the registration form with error messages (if any)
     return render_template("register.html", form=form)
 
-# Dashboard Route
+# Dashboard Route (To-Do List)
 @app.route("/dashboard")
 def dashboard():
     if "username" in session:
         user_id = session["user_id"]
+        # Fetch all tasks with their comments
         tasks = Todo.query.filter_by(user_id=user_id).all()
+
+        # Debug: Print tasks and their comments
+        for task in tasks:
+            print(f"Task ID: {task.id}, Content: {task.content}, Created: {task.created}")
+            for comment in task.comments:
+                print(f" - Comment: {comment.content}, Created: {comment.created}")        
         return render_template("dashboard.html", tasks=tasks)
     return redirect(url_for("home"))
 
@@ -207,15 +226,13 @@ def edit_todo(id):
             return render_template("edit.html", task=task, form=form)
     return redirect(url_for("home"))
 
-
-
 # Delete Task Route
 @app.route("/delete/<int:id>")
 def delete_todo(id):
     if "username" in session:
         todo = Todo.query.get_or_404(id)
         if todo.user_id == session["user_id"]:  # Ensure the user owns the task
-            db.session.delete(todo)
+            db.session.delete(todo)  # Cascade deletes comments
             db.session.commit()
         return redirect(url_for("dashboard"))
     return redirect(url_for("home"))
@@ -229,8 +246,7 @@ def add_comment(task_id):
         new_comment = Comment(content=content, task_id=task_id, user_id=user_id)
         db.session.add(new_comment)
         db.session.commit()
-        return redirect(url_for("view_task", task_id=task_id))
-    return redirect(url_for("home"))
+    return redirect(url_for("dashboard"))  
 
 # View Task with Comments
 @app.route("/task/<int:task_id>")
