@@ -54,6 +54,15 @@ class Comment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', backref='comments')
 
+# Followers Model
+class Follow(db.Model):
+    follower_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    followee_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+
+    # Relationships to help navigate followers and followees easily
+    follower = db.relationship('User', foreign_keys=[follower_id], backref='following')
+    followee = db.relationship('User', foreign_keys=[followee_id], backref='followers')
+
 # Initialize the database
 with app.app_context():
     # db.drop_all()  # Drop all tables (for development purposes)
