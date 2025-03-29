@@ -19,22 +19,38 @@
             <li>
                 <div>
                     <strong>{{ task.content }}</strong>
-                    <small>({{ task.created.strftime('%Y-%m-%d') }})</small>
+                    <small>({{ task.created_at.strftime('%Y-%m-%d') }})</small>
                 </div>
-                <!-- Display Comments -->
+                <!-- Display Comments for current user's task -->
                 {% if task.comments %}
                     <ul>
                         {% for comment in task.comments %}
                         <li>
                             <strong>{{ comment.user.username }}</strong>: {{ comment.content }}
-                            <small>({{ comment.created.strftime('%Y-%m-%d') }})</small>
+                            <small>({{ comment.created_at.strftime('%Y-%m-%d') }})</small>
+                            <!-- Display any nested replies -->
+                            {% if comment.replies %}
+                                <ul>
+                                    {% for reply in comment.replies %}
+                                    <li>
+                                        <strong>{{ reply.user.username }}</strong> (reply): {{ reply.content }}
+                                        <small>({{ reply.created_at.strftime('%Y-%m-%d') }})</small>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                            <!-- Reply Form (for current user's task comment) -->
+                            <form action="{{ url_for('add_comment_reply', comment_id=comment.id) }}" method="POST">
+                                <textarea name="reply" placeholder="Reply to comment" required></textarea>
+                                <button type="submit">Reply</button>
+                             </form>   
                         </li>
                         {% endfor %}
                     </ul>
                 {% else %}
                     <p>No comments yet.</p>
                 {% endif %}
-                <!-- Add Comment Form -->
+                <!-- Add Comment Form (for current user's task) -->
                 <form action="{{ url_for('add_comment', task_id=task.id) }}" method="POST">
                     <textarea name="comment" placeholder="Add a comment" required></textarea>
                     <button type="submit">Add Comment</button>
@@ -68,8 +84,44 @@
                 <ul>
                     {% for task in followed_users_tasks %}
                     <li>
-                        <strong>{{ task.user.username }}</strong>: {{ task.content }}
-                        <small>({{ task.created.strftime('%Y-%m-%d') }})</small>
+                        <div>
+                            <strong>{{ task.user.username }}</strong>: {{ task.content }}
+                            <small>({{ task.created_at.strftime('%Y-%m-%d') }})</small>
+                        </div>
+                        <!-- Display Comments for followed user's task -->
+                        {% if task.comments %}
+                            <ul>
+                                {% for comment in task.comments %}
+                                <li>
+                                    <strong>{{ comment.user.username }}</strong>: {{ comment.content }}
+                                    <small>({{ comment.created_at.strftime('%Y-%m-%d') }})</small>
+                                    <!-- Display nested replies if any -->
+                                    {% if comment.replies %}
+                                        <ul>
+                                            {% for reply in comment.replies %}
+                                            <li>
+                                                <strong>{{ reply.user.username }}</strong> (reply): {{ reply.content }}
+                                                <small>({{ comment.created_at.strftime('%Y-%m-%d') }})</small>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                    <!-- Reply Form for comments on followed user's task -->
+                                    <form action="{{ url_for('add_comment_reply', comment_id=comment.id) }}" method="POST">
+                                        <textarea name="reply" placeholder="Reply to comment" required></textarea>
+                                        <button type="submit">Reply</button>
+                                    </form>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No comments yet.</p>
+                        {% endif %}
+                        <!-- Add Comment Form for followed user's task -->
+                        <form action="{{ url_for('add_comment', task_id=task.id) }}" method="POST">
+                            <textarea name="comment" placeholder="Add a comment" required></textarea>
+                            <button type="submit">Add Comment</button>
+                        </form>
                     </li>
                     {% endfor %}
                 </ul>
