@@ -9,3 +9,6 @@ To-Do application
  + landing page
  + improved project navigation
  + split app.py into more modular components to make adding / editing functionality easier
+ + can follow other users now
+ + can comment on other users tasks and users can view other's comments / replies
+ + loginManager authentication added instead of manually checking if user:active
