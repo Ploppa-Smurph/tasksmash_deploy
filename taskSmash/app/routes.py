@@ -19,7 +19,6 @@ def home():
     return render_template("index.html", login_form=login_form, register_form=register_form)
 
 # Login route
-# Login route
 @app.route("/login", methods=["GET", "POST"])
 def login():
     login_form = LoginForm()  # Add this to define the login form
@@ -44,11 +43,15 @@ def login():
     # Pass forms when rendering the template without POST
     return render_template("index.html", login_form=login_form, register_form=register_form, show_create_account=False)
 
-
 # Register route
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    # For a fresh GET request (e.g., via nav link), clear all flash messages.
+    if request.method == "GET" and "keep_flash" not in request.args:
+        session.pop('_flashes', None)
+
     form = RegisterForm()
+
     if form.validate_on_submit():
         username = form.username.data
         email = form.email.data
@@ -60,10 +63,10 @@ def register():
 
         if existing_user_by_username or existing_user_by_email:
             flash("Username or email already exists.", "error")
-            # Redirect to consume the flash message on a fresh GET request.
-            return redirect(url_for("register"))
+            # Use a query parameter to preserve flash messages if needed after error.
+            return redirect(url_for("register", keep_flash=1))
         else:
-            # Create a new user
+            # Create the new user
             new_user = User(username=username, email=email)
             new_user.set_password(password)
             db.session.add(new_user)
@@ -71,7 +74,7 @@ def register():
 
             flash("Account created successfully!", "success")
             return redirect(url_for("login"))
-    
+
     return render_template("register.html", form=form)
 
 # Prevent browser caching of pages
@@ -81,7 +84,6 @@ def add_header(response):
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
     return response
-
 
 # Logout route
 @app.route("/logout", methods=["POST"])
