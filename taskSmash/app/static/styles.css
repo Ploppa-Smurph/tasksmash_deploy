@@ -6,6 +6,39 @@
     color: green;
 }
 
+nav {
+    background-color: #333; /* Background color for the navbar */
+    padding: 10px 20px; /* Space inside the navbar */
+    position: fixed; /* Keeps the navbar fixed at the top */
+    top: 0;
+    width: 100%;
+    z-index: 1000; /* Ensures the nav is above other elements */
+}
+
+nav ul {
+    list-style-type: none; /* Removes default bullet points */
+    margin: 0; /* Removes default margin */
+    padding: 0; /* Removes default padding */
+    display: flex; /* Displays items in a horizontal row */
+    justify-content: space-around; /* Spaces out nav items evenly */
+}
+
+nav ul li {
+    margin: 0 10px; /* Space between links */
+}
+
+nav ul li a {
+    text-decoration: none; /* Removes underline from links */
+    color: white; /* Link text color */
+    font-family: 'Poppins', sans-serif; /* Applies the Poppins font */
+    font-weight: 500; /* Font weight */
+    transition: color 0.3s ease; /* Smooth color transition */
+}
+
+nav ul li a:hover {
+    color: #ffcc00; /* Highlight color for hover state */
+}
+
 body {
     font-family: 'Poppins', sans-serif; /* Modern font */
     background: linear-gradient(135deg, #f5f5dc, #e0d3b8); /* Gradient background */
@@ -129,19 +162,18 @@ ul {
     padding: 0;
 }
 
-ul li {
-    background-color: #f8d7da; /* Light red for error messages */
-    color: #721c24; /* Dark red text */
-    padding: 12px;
-    margin-bottom: 10px;
-    border-radius: 6px;
-    border: 1px solid #f5c6cb; /* Light red border */
-    transition: transform 0.3s ease;
+ul li.success {
+    background-color: #d4edda; /* Light green */
+    color: #155724; /* Dark green text */
+    border: 1px solid #c3e6cb; /* Green border */
 }
 
-ul li:hover {
-    transform: translateX(5px); /* Slight shift on hover */
+ul li.error {
+    background-color: #f8d7da; /* Light red */
+    color: #721c24; /* Dark red text */
+    border: 1px solid #f5c6cb; /* Red border */
 }
+
 
 /* Logout Link */
 .logout-link {
@@ -271,40 +303,62 @@ ul li:hover {
     box-shadow: 0 4px 12px rgba(139, 115, 85, 0.3); /* Shadow on hover */
 }
 
-/* Landing Page Style */ 
+/* Landing Page Style */
+
+/* The full-screen container now uses the background image */
 .homebody {
-    background-image: url('/static/taskSmash_background.png');
-    background-size: cover;
-    background-position: center;
-    color: white;
-    text-align: center;
+    position: relative;
+    height: 100vh; /* Fill the viewport */
+    margin: 0;
     font-family: 'Arial', sans-serif;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-}
-
-.homemain-content {
-    padding: 50px;
-    background-color: rgba(0, 0, 0, 0.5); /* Add a slight black overlay behind the text */
-    display: inline-block;
-    border-radius: 15px;
-}
-
-.homeh1 {
-    font-size: 4em;
+    overflow: hidden;
+    /* Set the background image with no colored overlay and fully cover the view */
+    background: url("/static/taskSmash_background.png") no-repeat center center;
+    background-size: cover;
+  }
+  
+  /* Content overlay: centers the text vertically and horizontally */
+  .homemain-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    background: transparent;
+  }
+  
+  /* Headings styling */
+  .homeh1 {
+    font-size: 20em;
     margin-bottom: 20px;
-}
-
-.homeh3 {
+    color: #ce730b;
+    /* Adding multiple shadows with a 2px offset to simulate a thick dark green border */
+    text-shadow:
+      2px 0 0 #041404,
+      -2px 0 0 #041404,
+      0 2px 0 #041404,
+      0 -2px 0 #041404,
+      2px 2px 0 #041404,
+      -2px -2px 0 #041404,
+      2px -2px 0 #041404,
+      -2px 2px 0 #041404;
+  }
+  
+  .homeh3 {
+    font-size: 2.5em;
+    margin-top: 20px;
+    color: #041404;
+  }
+  
+  .homeh4 {
     font-size: 2em;
-    margin-bottom: 10px;
-}
-
-.homeh4 {
+    margin-top: 10px;
+    color: #ce730b;
+  }
+  
+  .homeh6 {
     font-size: 1.5em;
-    margin-bottom: 5px;
-}
-
-.homeh6 {
-    font-size: 1em;
-    margin-bottom: 5px;
-}
+    margin-top: 5px;
+    color: #ce730b;
+  }

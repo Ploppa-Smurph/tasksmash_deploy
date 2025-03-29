@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, flash, session, current_app
 from app import app, db
-from app.models import User, Todo, Comment
+from app.models import User, Todo, Comment, Follow
 from app.mail import send_mailgun_email
 import jwt
 from datetime import datetime, timedelta
@@ -50,31 +50,41 @@ def login():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        # Handle registration
         username = form.username.data
         email = form.email.data
         password = form.password.data
-        
+
+        # Check if the username or email already exists
         existing_user_by_username = User.query.filter_by(username=username).first()
         existing_user_by_email = User.query.filter_by(email=email).first()
-        
+
         if existing_user_by_username or existing_user_by_email:
             flash("Username or email already exists.", "error")
-            return render_template("register.html", form=form)
-        
-        new_user = User(username=username, email=email)
-        new_user.set_password(password)
-        db.session.add(new_user)
-        db.session.commit()
-        
-        flash("Account created successfully!", "success")
-        return redirect(url_for("login"))
+            # Redirect to consume the flash message on a fresh GET request.
+            return redirect(url_for("register"))
+        else:
+            # Create a new user
+            new_user = User(username=username, email=email)
+            new_user.set_password(password)
+            db.session.add(new_user)
+            db.session.commit()
+
+            flash("Account created successfully!", "success")
+            return redirect(url_for("login"))
     
     return render_template("register.html", form=form)
 
+# Prevent browser caching of pages
+@app.after_request
+def add_header(response):
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
+
 
 # Logout route
-@app.route("/logout")
+@app.route("/logout", methods=["POST"])
 def logout():
     session.pop("username", None)
     session.pop("user_id", None)
@@ -127,15 +137,6 @@ def reset_password(token):
         return redirect(url_for("home"))
     return render_template("resetPassword.html", token=token)
 
-# Dashboard route to show user's tasks
-@app.route("/dashboard")
-def dashboard():
-    if "username" in session:
-        user_id = session["user_id"]
-        tasks = Todo.query.filter_by(user_id=user_id).all()
-        return render_template("dashboard.html", tasks=tasks)
-    return redirect(url_for("home"))
-
 # Route to add a new to-do
 @app.route("/add", methods=["POST"])
 def add_todo():
@@ -163,7 +164,7 @@ def edit_todo(id):
     return redirect(url_for("home"))
 
 # Route to delete a to-do
-@app.route("/delete/<int:id>")
+@app.route("/delete/<int:id>", methods=["POST"])
 def delete_todo(id):
     if "username" in session:
         todo = Todo.query.get_or_404(id)
@@ -191,4 +192,65 @@ def view_task(task_id):
         task = Todo.query.get_or_404(task_id)
         comments = Comment.query.filter_by(task_id=task_id).all()
         return render_template("task.html", task=task, comments=comments)
+    return redirect(url_for("home"))
+
+# Route to follow a user
+@app.route("/follow/<int:user_id>", methods=["POST"])
+def follow_user(user_id):
+    if "username" in session:
+        current_user_id = session["user_id"]
+        user_to_follow = User.query.get_or_404(user_id)
+        
+        # Check if already following
+        existing_follow = Follow.query.filter_by(follower_id=current_user_id, followee_id=user_id).first()
+        if not existing_follow:
+            follow = Follow(follower_id=current_user_id, followee_id=user_id)
+            db.session.add(follow)
+            db.session.commit()
+            flash(f"You are now following {user_to_follow.username}!", "success")
+        else:
+            flash(f"You are already following {user_to_follow.username}.", "info")
+    return redirect(url_for("dashboard"))
+
+# Route to unfollow a user
+@app.route("/unfollow/<int:user_id>", methods=["POST"])
+def unfollow_user(user_id):
+    if "username" in session:
+        current_user_id = session["user_id"]
+        follow = Follow.query.filter_by(follower_id=current_user_id, followee_id=user_id).first()
+        
+        if follow:
+            db.session.delete(follow)
+            db.session.commit()
+            flash("You have unfollowed the user.", "success")
+        else:
+            flash("You were not following this user.", "info")
+    return redirect(url_for("dashboard"))
+
+# Route to view the user's dashboard
+@app.route("/dashboard")
+def dashboard():
+    if "username" in session:
+        user_id = session["user_id"]
+
+        # Get the current user's tasks (including comments)
+        tasks = Todo.query.filter_by(user_id=user_id).all()
+
+        # Get users followed by the current user
+        followed_users = User.query.join(Follow, Follow.followee_id == User.id).filter(Follow.follower_id == user_id).all()
+
+        # Get tasks from followed users
+        followed_users_tasks = Todo.query.join(Follow, Follow.followee_id == Todo.user_id).filter(Follow.follower_id == user_id).all()
+
+        # Get users that are NOT followed by the current user
+        non_followed_users = User.query.filter(User.id != user_id).filter(
+            ~User.id.in_(db.session.query(Follow.followee_id).filter(Follow.follower_id == user_id))
+        ).all()
+
+        return render_template(
+            "dashboard.html",
+            tasks=tasks,
+            followed_users_tasks=followed_users_tasks,
+            non_followed_users=non_followed_users
+        )
     return redirect(url_for("home"))

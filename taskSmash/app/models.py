@@ -44,6 +44,7 @@ class Comment(db.Model):
 class Follow(db.Model):
     follower_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     followee_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-
-    follower = db.relationship('User', foreign_keys=[follower_id], backref='following')
+    
+    # Relationships
+    follower = db.relationship('User', foreign_keys=[follower_id], backref='followed_users')
     followee = db.relationship('User', foreign_keys=[followee_id], backref='followers')

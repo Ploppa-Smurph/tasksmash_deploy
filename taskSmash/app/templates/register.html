@@ -1,37 +1,48 @@
 {% extends 'base.html' %}
 
+{% block head %}
+<title>Create Account</title>
+{% endblock %}
+
 {% block body %}
-<section>
-    <h1>Register</h1>
-    <form action="{{ url_for('register') }}" method="POST">
+<section class="App Content">
+    <h1>Create Account</h1>
+
+    <!-- Display flash messages conditionally -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+        <ul>
+          {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('register') }}">
         {{ form.hidden_tag() }}
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <p class="{{ category }}">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
-
         <p>
             {{ form.username.label }}<br>
             {{ form.username(size=32) }}
+            {% for error in form.username.errors %}
+                <span class="error">{{ error }}</span>
+            {% endfor %}
         </p>
-
         <p>
             {{ form.email.label }}<br>
             {{ form.email(size=32) }}
+            {% for error in form.email.errors %}
+                <span class="error">{{ error }}</span>
+            {% endfor %}
         </p>
-
         <p>
             {{ form.password.label }}<br>
             {{ form.password(size=32) }}
+            {% for error in form.password.errors %}
+                <span class="error">{{ error }}</span>
+            {% endfor %}
         </p>
-
         <button type="submit">Register</button>
     </form>
-
-    <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
 </section>
 {% endblock %}
