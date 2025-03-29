@@ -9,15 +9,16 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-     <!-- Navbar -->
-     <nav>
+    <nav>
         <ul>
-            <li class="nav"><a href="{{ url_for('landing_page') }}">Home</a></li>
-            <li class="nav"><a href="{{ url_for('register') }}">Create Account</a></li>
-            <li class="nav"><a href="{{ url_for('login') }}">Login</a></li>
-            <li class="nav"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+          <li class="nav"><a href="{{ url_for('landing_page') }}">Home</a></li>
+          <li class="nav"><a href="{{ url_for('register') }}">Create Account</a></li>
+          <li class="nav"><a href="{{ url_for('login') }}">Login</a></li>
+          <li class="nav"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+          <li class="nav"><a href="{{ url_for('about') }}">About</a></li>
         </ul>
-    </nav>
+      </nav>
+      
     
     {% block body %}{% endblock %}
 </body>

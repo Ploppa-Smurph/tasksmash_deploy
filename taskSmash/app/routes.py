@@ -255,3 +255,10 @@ def dashboard():
                            tasks=tasks,
                            followed_users_tasks=followed_users_tasks,
                            non_followed_users=non_followed_users)
+
+# -----------------------------
+# About Route
+# -----------------------------
+@app.route("/about")
+def about():
+    return render_template("about.html")
