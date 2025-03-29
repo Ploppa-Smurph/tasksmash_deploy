@@ -6,3 +6,6 @@ To-Do application
  + added form error handling via Flask-WTF
  + task / comment forms updated
  + error handling if email is registered to user already
+ + landing page
+ + improved project navigation
+ + split app.py into more modular components to make adding / editing functionality easier
