@@ -12,3 +12,4 @@ To-Do application
  + can follow other users now
  + can comment on other users tasks and users can view other's comments / replies
  + loginManager authentication added instead of manually checking if user:active
+ + added 'About' page with listing of tools used in project and project purpose
