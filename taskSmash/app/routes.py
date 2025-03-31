@@ -147,17 +147,26 @@ def login():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    # If a user is already logged in, log them out.
+    if current_user.is_authenticated:
+        logout_user()  # Clears the Flask-Login session; also remove any legacy session keys if present.
+        # Optionally, you can also clear old session keys:
+        session.pop("username", None)
+        session.pop("user_id", None)
+    
     if request.method == "GET" and "keep_flash" not in request.args:
         session.pop('_flashes', None)
+
     form = RegisterForm()
+
     if form.validate_on_submit():
         username = form.username.data
         email = form.email.data
         password = form.password.data
-        
+
         existing_user_by_username = User.query.filter_by(username=username).first()
         existing_user_by_email = User.query.filter_by(email=email).first()
-        
+
         if existing_user_by_username or existing_user_by_email:
             flash("Username or email already exists.", "error")
             return redirect(url_for("register", keep_flash=1))
@@ -166,8 +175,10 @@ def register():
             new_user.set_password(password)
             db.session.add(new_user)
             db.session.commit()
+
             flash("Account created successfully!", "success")
             return redirect(url_for("login"))
+
     return render_template("register.html", form=form)
 
 # -----------------------------
