@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Dashboard</title>
+<style>
+  .achievement-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #1abc9c;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 10px;
+    font-weight: bold;
+    z-index: 9999;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: slidein 0.5s ease, fadeout 0.5s ease 3s forwards;
+  }
+
+  @keyframes slidein {
+    from { transform: translateY(100px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  @keyframes fadeout {
+    to { opacity: 0; transform: translateY(100px); }
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="App Content">
+    <!-- Toast Flash for Achievement -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        {% if category == 'achievement' %}
+          <div class="achievement-toast">{{ message }}</div>
+        {% endif %}
+      {% endfor %}
+    {% endwith %}
+
+    <h1>Welcome, {{ current_user.username }}</h1>
+
+    <!-- Logout Button -->
+    <form action="{{ url_for('logout') }}" method="POST" class="logout">
+        <button type="submit" class="logout-btn">Logout</button>
+    </form>
+
+    <div class="dashboard-container">
+        <!-- Tasks Section -->
+        <div class="dashboard-section">
+            <h2 class="section-heading">Your Tasks</h2>
+            {% if tasks %}
+                <ul class="task-list">
+                    {% for task in tasks %}
+                    <li class="task-item">
+                        <div>
+                            <strong>{{ task.content }}</strong>
+                            <small>({{ task.created_at.strftime('%Y-%m-%d') }})</small>
+                        </div>
+                        <div class="dropdown">
+                            <button class="dropbtn">Options</button>
+                            <div class="dropdown-content">
+                                <form action="{{ url_for('complete_task', task_id=task.id) }}" method="POST">
+                                    <button type="submit">Mark as Complete</button>
+                                </form>
+                                <form action="{{ url_for('edit_todo', id=task.id) }}" method="GET">
+                                    <button type="submit">Edit</button>
+                                </form>
+                                <form action="{{ url_for('delete_todo', id=task.id) }}" method="POST">
+                                    <button type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No current tasks, add one now:</p>
+            {% endif %}
+            <form action="{{ url_for('add_todo') }}" method="POST" class="task-input-container">
+                <input type="text" name="content" placeholder="Enter your task" required />
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+
+        <!-- Followed Users Section -->
+        <div class="dashboard-section">
+            <h2 class="section-heading">Tasks from Users You Follow</h2>
+            {% if followed_users_tasks %}
+                <ul>
+                    {% for task in followed_users_tasks %}
+                    <li>
+                        <strong>{{ task.user.username }}</strong>: {{ task.content }}
+                        <small>({{ task.created_at.strftime('%Y-%m-%d') }})</small>
+                    </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>You are not following anyone yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Achievements Section -->
+        <div class="dashboard-section achievements">
+            <h2 class="section-heading">Your Achievements 🏆</h2>
+            {% if achievements %}
+                <ul>
+                    {% for ach in achievements %}
+                        <li><strong>{{ ach.name }}</strong>: {{ ach.description }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>You haven't earned any achievements yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
