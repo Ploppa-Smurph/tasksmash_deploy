@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>Dashboard</title>
+{% endblock %}
+
+{% block body %}
+<section class="App Content">
+    <h1>Welcome, {{ session.username }}</h1>
+    <a href="{{ url_for('logout') }}">Logout</a>
+
+    <!-- To-Do List -->
+    <h2>Your To-Do List</h2>
+    {% if tasks | length < 1 %}
+        <h3>No current tasks. Please add a task below!</h3>
+    {% else %}
+        <table>
+            <tr>
+                <th>Task</th>
+                <th>Date Added</th>
+                <th>Actions</th>
+                <th>Comments</th>
+            </tr>
+            {% for task in tasks %}
+                <tr>
+                    <td>{{ task.content }}</td>
+                    <td>{{ task.created.strftime("%Y-%m-%d") }}</td>
+                    <td>
+                        <a href="{{ url_for('delete_todo', id=task.id) }}">Delete</a>
+                        <br>
+                        <a href="{{ url_for('edit_todo', id=task.id) }}">Edit</a>
+                    </td>
+                    <td>
+                        <!-- Task Comments Section -->
+                        <div class="comments">
+                            <h4>Comments:</h4>
+                            <ul>
+                                {% for comment in task.comments %}
+                                <li id="comment-{{ comment.id }}">
+                                    <strong>{{ comment.user.username }}:</strong> {{ comment.content }}
+                                    <br><small>{{ comment.created }}</small>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            <!-- Comment Form -->
+                            <form action="{{ url_for('add_comment', task_id=task.id) }}" method="POST">
+                                <textarea name="comment" placeholder="Add a comment..." required></textarea>
+                                <button type="submit">Post Comment</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    <!-- Add Task Form -->
+    <form action="{{ url_for('add_todo') }}" method="POST">
+        <input type="text" name="content" id="content" placeholder="Add a new task" required>
+        <input type="submit" value="Add Task" id="btn_add">
+    </form>
+</section>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<h5>ToDo APP Dashboard</h5>
+{% endblock %}
+
+{% block body %}
+<!-- dashboard -->
+<section class="bodyContainer">
+    <h1>Dashboard</h1>
+    <p>Welcome, {{ user.username }}!</p>
+    <p>This is your Personalized Dashboard area</p>
+    <a href="{{url_for('logout')}}" class="btn btnLogout">Logout</a>
+</section>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block head %}
+<title>Edit Task</title>
+{% endblock %}
+
+{% block body %}
+<section class="edit-task">
+    <div class="edit-box">
+        <h1>Edit Task</h1>
+        <form action="/edit/{{ task.id }}" method="POST">
+            {{ form.hidden_tag() }} <!-- Required for CSRF protection -->
+            
+            <p>
+                {{ form.content.label }}<br>
+                {{ form.content }}<br>
+                {% for error in form.content.errors %}
+                    <span style="color: red;">{{ error }}</span>
+                {% endfor %}
+            </p>
+            
+            <p>
+                {{ form.submit(class_='btn-update') }}
+            </p>
+        </form>
+    </div>
+</section>
+{% endblock %}
