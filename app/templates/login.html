@@ -6,7 +6,7 @@
 
 {% block body %}
 <section class="login-container">
-    <img src="{{ url_for('static', filename='taskSmash_background.png') }}" alt="TaskSmash Logo" class="logo">
+    <img src="{{ url_for('static', filename='images/taskSmash_background.png') }}" alt="TaskSmash Logo" class="logo">
     <h1>Login</h1>
     <form method="POST" action="{{ url_for('login') }}">
         {{ login_form.hidden_tag() }}
