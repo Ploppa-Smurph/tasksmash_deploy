@@ -1,10 +1,9 @@
 /* static/styles/dashboard.css */
-/* Styles specific to the dashboard page layout and elements */
 
-/* Add padding to the main dashboard content area */
 .dashboard-page.App.Content {
   max-width: 1600px; /* Allow wider dashboard */
   padding: var(--spacing-lg);
+  background-color: var(--light-blue); /* Light blue background for the page */
 }
 
 .dashboard-header {
@@ -17,132 +16,183 @@
 }
 
 .dashboard-header h1 {
-  margin-bottom: 0; /* Remove bottom margin from h1 */
-  text-align: left; /* Align heading left */
+  margin-bottom: 0;
+  text-align: left;
+  color: var(--dark-gray);
 }
 
 .logout-form-dashboard button {
-  margin: 0; /* Remove default margins if any */
+  margin: 0;
 }
 
-/* New Grid Layout Container */
-.dashboard-grid-container {
+/* New Grid Layout Container for Dashboard */
+.dashboard-grid-container-v2 {
 display: grid;
-/* Define grid areas for layout */
 grid-template-areas:
-  "personal personal" /* Top row spans 2 columns */
-  "followed popular"  /* Bottom row has 2 columns */
-  "achievements achievements"; /* Achievements span below */
-grid-template-columns: 1fr 1fr; /* Two equal columns */
-grid-template-rows: auto auto auto; /* Rows adjust height */
-gap: var(--spacing-lg); /* Gap between grid items */
+  "personal personal"   /* Top row: personal tasks spans 2 columns */
+  "friends  popular"    /* Bottom row: friends activity, popular tasks */
+  "achievements achievements"; /* Achievements span below, or remove if placed elsewhere */
+grid-template-columns: 1fr 1fr; /* Two equal columns for the bottom row */
+grid-template-rows: auto auto auto; /* Rows adjust height: personal, bottom_row, achievements */
+gap: var(--spacing-lg);
 width: 100%;
 }
 
 /* Assign sections to grid areas */
-.personal-tasks-section { grid-area: personal; }
-.followed-tasks-section { grid-area: followed; }
-.popular-tasks-section { grid-area: popular; }
-.achievements-section { grid-area: achievements; }
+.personal-tasks-area { grid-area: personal; }
+.friends-activity-area { grid-area: friends; } /* Renamed from followed-tasks-section for clarity */
+.community-tasks-area { grid-area: popular; } /* Renamed from popular-tasks-section */
+.achievements-area { grid-area: achievements; } /* Renamed from achievements-section */
 
-/* General Dashboard Section Styling (inherited from layout.css, add specifics here) */
+/* General Dashboard Section Styling */
 .dashboard-section {
-background-color: #ffffff;
-border-radius: var(--border-radius-md);
-box-shadow: var(--shadow-sm);
+background-color: var(--light-bg); /* Near white background for cards */
+border-radius: var(--border-radius-lg); /* More rounded */
+box-shadow: var(--shadow-md); /* Softer shadow */
 padding: var(--spacing-lg);
-/* Remove flex properties from layout.css if they conflict */
-flex: none; /* Override flex from layout.css */
-min-width: 0; /* Reset min-width */
-margin: 0; /* Grid gap handles spacing */
-border: 1px solid var(--border-color); /* Add subtle border */
+border: none; /* Remove previous border */
+display: flex; /* Allow flex for internal alignment */
+flex-direction: column; /* Stack content vertically */
 }
 
 .section-heading {
-font-size: 1.4rem; /* Slightly smaller section headings */
-color: var(--primary-blue); /* Use primary blue */
+font-size: 1.6rem;
+color: var(--primary-blue);
 margin-bottom: var(--spacing-md);
 padding-bottom: var(--spacing-sm);
-border-bottom: 2px solid var(--primary-blue);
-display: inline-block; /* Prevent border stretching full width */
+border-bottom: 2px solid var(--accent-orange); /* Accent border */
+display: inline-block;
+align-self: flex-start; /* Align heading to the start */
 }
 .sub-heading {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: var(--dark-gray);
   margin-top: var(--spacing-lg);
   margin-bottom: var(--spacing-sm);
-  font-weight: 500;
+  font-weight: 600;
 }
 
-/* Personal Tasks Section */
-.personal-tasks-section .task-input-container {
-  margin-bottom: var(--spacing-lg); /* Space below input */
+/* Personal Tasks Section Specifics */
+.personal-tasks-area .task-input-form {
+  display: flex;
+  flex-direction: column; /* Stack input fields */
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  background-color: #fff; /* White background for form */
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
 }
+.personal-tasks-area .task-input-form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+.personal-tasks-area .task-input-form label {
+  margin-bottom: var(--spacing-xs);
+  font-size: 0.9em;
+  color: var(--medium-gray);
+}
+.personal-tasks-area .task-input-form input[type="date"] {
+  padding: var(--spacing-sm); /* Consistent padding */
+}
+.personal-tasks-area .task-input-form textarea {
+  min-height: 60px;
+}
+.personal-tasks-area .task-input-form .btn-block { /* Button takes full width */
+  width: 100%;
+}
+
 .personal-task-list {
-  max-height: 400px; /* Limit height and allow scroll */
+  max-height: 45vh; /* Limit height and allow scroll */
   overflow-y: auto;
-  padding-right: var(--spacing-sm); /* Space for scrollbar */
+  padding-right: var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm);
 }
-
-/* Task Item Styling (Your Tasks) */
 .task-item {
 display: flex;
 justify-content: space-between;
 align-items: center;
-padding: var(--spacing-sm) 0;
-border-bottom: 1px dashed var(--border-color);
+padding: var(--spacing-md);
+border-bottom: 1px solid var(--border-color);
+background-color: #fff;
+margin-bottom: var(--spacing-sm);
+border-radius: var(--border-radius-sm);
+transition: background-color var(--transition-fast);
+}
+.task-item:hover {
+  background-color: #f8f9fa;
 }
 .task-item:last-child { border-bottom: none; }
 .task-content { flex-grow: 1; margin-right: var(--spacing-md); }
 .task-content strong { color: var(--dark-gray); }
-.task-content small { color: var(--medium-gray); font-size: 0.85em; margin-left: var(--spacing-sm); }
+.task-content small { color: var(--medium-gray); font-size: 0.85em; display: block; margin-top: var(--spacing-xs); }
+.task-content .due-date { font-weight: 500; color: var(--primary-blue); }
+.task-content .due-date.overdue { color: var(--danger-color); font-weight: bold; }
 .task-status-completed { color: var(--success-color); font-weight: 500; }
-.task-options .dropbtn { /* Smaller options button */
+
+.task-options .dropbtn {
   padding: var(--spacing-xs) var(--spacing-sm);
   font-size: 0.85rem;
-  background-color: var(--light-blue);
+  background-color: var(--light-bg);
   color: var(--dark-gray);
+  border: 1px solid var(--border-color);
 }
-.task-options .dropdown-content button { font-size: 0.9em; padding: var(--spacing-xs) var(--spacing-sm); }
+.task-options .dropdown-content button { font-size: 0.9em; padding: var(--spacing-sm); }
 .task-options .dropdown-content button.text-danger { color: var(--danger-color); }
 .task-options .dropdown-content button.text-danger:hover { background-color: rgba(220, 53, 69, 0.1); }
 
-
-/* Feed Task Item Styling (Followed & Popular) */
+/* Feed Task Item Styling (Friends' & Community) */
+.feed-task-list {
+  max-height: 35vh; /* Consistent height for bottom sections */
+  overflow-y: auto;
+  padding-right: var(--spacing-sm);
+}
 .task-item-feed {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm);
   margin-bottom: var(--spacing-sm);
   border-radius: var(--border-radius-sm);
-  background-color: #f8f9fa; /* Light background for feed items */
+  background-color: #fff; /* White cards */
   border: 1px solid var(--border-color);
+  transition: box-shadow var(--transition-fast);
+}
+.task-item-feed:hover {
+  box-shadow: var(--shadow-sm);
 }
 .feed-task-content { flex-grow: 1; margin-right: var(--spacing-md); }
+.feed-task-content .feed-task-link { color: var(--dark-gray); display: block; }
+.feed-task-content .feed-task-link:hover { color: var(--primary-blue); }
 .feed-task-content strong { color: var(--primary-blue); }
-.feed-task-content small { color: var(--medium-gray); font-size: 0.85em; margin-left: var(--spacing-sm); }
+.feed-task-content small { color: var(--medium-gray); font-size: 0.8em; display: block; margin-top: var(--spacing-xs); }
 .feed-task-actions { display: flex; gap: var(--spacing-xs); flex-shrink: 0; }
 
-
 /* User Follow List */
-.user-follow-list { list-style: none; padding: 0; }
+.user-follow-list { list-style: none; padding: 0; margin-top: var(--spacing-sm); }
 .user-follow-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: var(--spacing-xs) 0;
   border-bottom: 1px dotted var(--border-color);
+  font-size: 0.9rem;
 }
 .user-follow-item:last-child { border-bottom: none; }
-.user-follow-item span { font-weight: 500; }
+.user-follow-item span { font-weight: 500; color: var(--dark-gray); }
 
 /* Achievements List */
+.achievements-area { /* Achievements can span full width at the bottom */
+  background-color: var(--light-bg);
+}
 .achievements-list { list-style: none; padding: 0; }
 .achievements-list li {
   margin-bottom: var(--spacing-sm);
   padding-left: var(--spacing-lg);
   position: relative;
+  font-size: 0.95rem;
 }
 .achievements-list li::before {
   content: "🏆";
@@ -153,12 +203,15 @@ border-bottom: 1px dashed var(--border-color);
   color: var(--accent-orange);
 }
 
-/* Override task card styles if they were too specific */
-.task-card { /* Resetting styles if they were defined before */
-  border: none;
-  padding: 0;
-  margin: 0;
-  border-radius: 0;
-  background: none;
-  box-shadow: none;
+/* Sr-only for accessibility */
+.sr-only {
+position: absolute;
+width: 1px;
+height: 1px;
+padding: 0;
+margin: -1px;
+overflow: hidden;
+clip: rect(0, 0, 0, 0);
+white-space: nowrap;
+border: 0;
 }

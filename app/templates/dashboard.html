@@ -5,7 +5,8 @@
 {% endblock %}
 
 {% block body %}
-<section class="App Content dashboard-page"> {% with messages = get_flashed_messages(with_categories=true) %}
+<section class="App Content dashboard-page">
+    {% with messages = get_flashed_messages(with_categories=true) %}
       {% for category, message in messages %}
         {% if category == 'achievement' %}
           <div class="achievement-toast">{{ message }}</div>
@@ -16,23 +17,45 @@
     <div class="dashboard-header">
         <h1>Welcome, {{ current_user.username }}</h1>
         <form action="{{ url_for('auth.logout') }}" method="POST" class="logout-form-dashboard">
-            <button type="submit" class="btn btn-secondary btn-sm">Logout</button> </form>
+            <button type="submit" class="btn btn-secondary btn-sm">Logout</button>
+        </form>
     </div>
 
-    <div class="dashboard-grid-container">
+    <div class="dashboard-grid-container-v2">
 
-        <div class="dashboard-section personal-tasks-section"> <h2 class="section-heading">Your Tasks</h2>
-            <form action="{{ url_for('todo.add_todo') }}" method="POST" class="task-input-container">
-                <input type="text" name="content" placeholder="Enter a new task..." required />
-                <button type="submit" class="btn btn-accent-green">Add Task</button> </form>
+        <div class="dashboard-section personal-tasks-area">
+            <h2 class="section-heading">Your Tasks</h2>
+            <form action="{{ url_for('todo.add_todo') }}" method="POST" class="task-input-form">
+                <div class="form-group">
+                    <label for="task-content" class="sr-only">New Task Content</label>
+                    <textarea name="content" id="task-content" placeholder="What needs to be done?" required rows="2"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="task-due-date">Due Date (Optional):</label>
+                    <input type="date" name="due_date" id="task-due-date">
+                </div>
+                <button type="submit" class="btn btn-accent-green btn-block">Add Task</button>
+            </form>
+
             {% if tasks %}
-                <ul class="task-list personal-task-list"> {% for task in tasks %}
+                <ul class="task-list personal-task-list">
+                    {% for task in tasks %}
                     <li class="task-item">
                         <div class="task-content">
                             <strong>{{ task.content }}</strong>
-                            <small>({{ task.created_at.strftime('%Y-%m-%d') }}) {% if task.completed %}<span class="task-status-completed">(Completed)</span>{% endif %}</small>
+                            <small>
+                                (Added: {{ task.created_at.strftime('%Y-%m-%d') }})
+                                {% if task.due_date %}
+                                    <span class="due-date {% if task.is_overdue %}overdue{% endif %}">
+                                        Due: {{ task.due_date.strftime('%Y-%m-%d') }}
+                                    </span>
+                                {% endif %}
+                                {% if task.completed %}<span class="task-status-completed">(Completed)</span>{% endif %}
+                            </small>
                         </div>
-                        <div class="task-options dropdown"> <button class="dropbtn btn-sm">Options</button> <div class="dropdown-content">
+                        <div class="task-options dropdown">
+                            <button class="dropbtn btn-sm">Options</button>
+                            <div class="dropdown-content">
                                 {% if not task.completed %}
                                 <form action="{{ url_for('todo.complete_task', task_id=task.id) }}" method="POST">
                                     <button type="submit">Mark Complete</button>
@@ -42,7 +65,8 @@
                                 </form>
                                 {% endif %}
                                 <form action="{{ url_for('todo.delete_todo', id=task.id) }}" method="POST">
-                                    <button type="submit" class="text-danger">Delete</button> </form>
+                                    <button type="submit" class="text-danger">Delete</button>
+                                </form>
                                 <form action="{{ url_for('todo.view_task', task_id=task.id) }}" method="GET">
                                      <button type="submit">View Details</button>
                                 </form>
@@ -54,19 +78,26 @@
             {% else %}
                 <p class="no-tasks-message">No current tasks. Add one above!</p>
             {% endif %}
-        </div><div class="dashboard-section followed-tasks-section"> <h2 class="section-heading">Friends' Activity</h2>
+        </div><div class="dashboard-section friends-activity-area">
+            <h2 class="section-heading">Friends' Activity</h2>
             {% if followed_users_tasks %}
-                <ul class="task-list followed-task-list"> {% for task in followed_users_tasks %}
-                    <li class="task-item-feed"> <div class="feed-task-content">
-                             <strong>{{ task.user.username }}</strong>: {{ task.content }}
-                             <small>({{ task.created_at.strftime('%Y-%m-%d') }})</small>
+                <ul class="task-list feed-task-list">
+                    {% for task in followed_users_tasks %}
+                    <li class="task-item-feed">
+                         <div class="feed-task-content">
+                             <a href="{{ url_for('todo.view_task', task_id=task.id) }}" class="feed-task-link">
+                                <strong>{{ task.user.username }}</strong>: {{ task.content }}
+                             </a>
+                             <small>
+                                ({{ task.created_at.strftime('%b %d') }})
+                                {% if task.due_date %} - Due: {{ task.due_date.strftime('%b %d') }}{% endif %}
+                             </small>
                          </div>
                          <div class="feed-task-actions">
                              <form action="{{ url_for('main.unfollow_user', user_id=task.user.id) }}" method="POST" style="display:inline;">
-                                 <button type="submit" class="btn btn-unfollow">Unfollow</button> </form>
-                             <form action="{{ url_for('todo.view_task', task_id=task.id) }}" method="GET" style="display:inline;">
-                                  <button type="submit" class="btn btn-view-details">View</button> </form>
-                         </div>
+                                 <button type="submit" class="btn btn-unfollow btn-xs">Unfollow</button>
+                             </form>
+                             </div>
                     </li>
                     {% endfor %}
                 </ul>
@@ -74,33 +105,54 @@
                 <p>Tasks from users you follow will appear here.</p>
             {% endif %}
 
-             <h3 class="sub-heading">Find Users to Follow</h3> {% if non_followed_users %}
+             <h3 class="sub-heading">Find Users to Follow</h3>
+             {% if non_followed_users %}
                  <ul class="user-follow-list">
                      {% for user_to_follow in non_followed_users %}
                      <li class="user-follow-item">
                          <span>{{ user_to_follow.username }}</span>
                          <form action="{{ url_for('main.follow_user', user_id=user_to_follow.id) }}" method="POST" style="display:inline;">
-                             <button type="submit" class="btn btn-follow">Follow</button> </form>
+                             <button type="submit" class="btn btn-follow btn-xs">Follow</button>
+                         </form>
                      </li>
                      {% endfor %}
                  </ul>
              {% else %}
-                 <p>No other users found or you are following everyone!</p>
+                 <p>No new users to follow right now.</p>
              {% endif %}
-        </div> <div class="dashboard-section popular-tasks-section"> <h2 class="section-heading">Community Tasks</h2> {% if all_tasks %}
-                 <ul class="task-list community-task-list"> {% for task in all_tasks %}
-                        {% if task.user_id != current_user.id %} {# Optionally hide own tasks from this feed #}
-                        <li class="task-item-feed"> <div class="feed-task-content">
-                                 <strong>{{ task.user.username }}</strong>: {{ task.content }}
-                                 <small>({{ task.created_at.strftime('%Y-%m-%d') }})</small>
+        </div> <div class="dashboard-section community-tasks-area">
+            <h2 class="section-heading">Community Tasks</h2>
+            {% if all_tasks %}
+                 <ul class="task-list feed-task-list">
+                    {% for task in all_tasks %}
+                        {% if task.user_id != current_user.id %}
+                        <li class="task-item-feed">
+                             <div class="feed-task-content">
+                                 <a href="{{ url_for('todo.view_task', task_id=task.id) }}" class="feed-task-link">
+                                    <strong>{{ task.user.username }}</strong>: {{ task.content }}
+                                 </a>
+                                 <small>
+                                    ({{ task.created_at.strftime('%b %d') }})
+                                    {% if task.due_date %} - Due: {{ task.due_date.strftime('%b %d') }}{% endif %}
+                                 </small>
                              </div>
                              <div class="feed-task-actions">
-                                 {% if task.user not in current_user.followed_users | map(attribute='followee') | list %}
+                                 {% set is_following = False %}
+                                 {% for followed_link in current_user.following %}
+                                     {% if followed_link.followee_id == task.user.id %}
+                                         {% set is_following = True %}
+                                     {% endif %}
+                                 {% endfor %}
+
+                                 {% if not is_following %}
                                  <form action="{{ url_for('main.follow_user', user_id=task.user.id) }}" method="POST" style="display:inline;">
-                                     <button type="submit" class="btn btn-follow">Follow</button> </form>
+                                     <button type="submit" class="btn btn-follow btn-xs">Follow</button>
+                                 </form>
+                                 {% else %}
+                                  <form action="{{ url_for('main.unfollow_user', user_id=task.user.id) }}" method="POST" style="display:inline;">
+                                     <button type="submit" class="btn btn-unfollow btn-xs">Unfollow</button>
+                                 </form>
                                  {% endif %}
-                                 <form action="{{ url_for('todo.view_task', task_id=task.id) }}" method="GET" style="display:inline;">
-                                      <button type="submit" class="btn btn-view-details">View</button> </form>
                              </div>
                         </li>
                         {% endif %}
@@ -109,9 +161,11 @@
             {% else %}
                 <p>No tasks found in the community yet.</p>
             {% endif %}
-        </div> <div class="dashboard-section achievements-section"> <h2 class="section-heading">Your Achievements 🏆</h2>
+        </div> <div class="dashboard-section achievements-area">
+            <h2 class="section-heading">Your Achievements 🏆</h2>
             {% if achievements %}
-                <ul class="achievements-list"> {% for ach in achievements %}
+                <ul class="achievements-list">
+                    {% for ach in achievements %}
                         <li><strong>{{ ach.name }}</strong>: {{ ach.description }}</li>
                     {% endfor %}
                 </ul>
@@ -120,3 +174,4 @@
             {% endif %}
         </div></div> </section>
 {% endblock %}
+

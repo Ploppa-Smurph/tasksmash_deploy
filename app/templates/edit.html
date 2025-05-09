@@ -1,26 +1,39 @@
 {% extends "base.html" %}
 
 {% block head %}
-<title>Edit Task</title>
+<title>Edit Task - TaskSmash</title>
 {% endblock %}
 
 {% block body %}
-<section class="edit-task">
-    <div class="edit-box">
-        <h1>Edit Task</h1>
+<section class="edit-task-section"> <div class="edit-box"> <h1>Edit Task</h1>
         <form action="{{ url_for('todo.edit_todo', id=task.id) }}" method="POST">
-            {{ form.hidden_tag() }} <p>
-                {{ form.content.label }}<br>
-                {{ form.content }}<br>
-                {% for error in form.content.errors %}
-                    <span style="color: red;">{{ error }}</span>
-                {% endfor %}
-            </p>
+            {{ form.hidden_tag() }} <div class="form-group"> {{ form.content.label(class="form-label") }}<br>
+                {{ form.content(class="form-control", rows="3") }}<br> {% if form.content.errors %}
+                    <ul class="errors">
+                        {% for error in form.content.errors %}
+                            <li class="error">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
             
-            <p>
-                {{ form.submit(class_='btn-update') }}
-            </p>
+            <div class="form-group"> {{ form.due_date.label(class="form-label") }}<br>
+                {{ form.due_date(class="form-control") }}<br> 
+                {% if form.due_date.errors %}
+                    <ul class="errors">
+                        {% for error in form.due_date.errors %}
+                            <li class="error">{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                {{ form.submit(class_='btn btn-primary btn-block') }} </div>
         </form>
+        <p style="margin-top: 20px;">
+            <a href="{{ url_for('main.dashboard') }}" class="btn btn-link">Cancel and Back to Dashboard</a>
+        </p>
     </div>
 </section>
 {% endblock %}

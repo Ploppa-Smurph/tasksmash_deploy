@@ -7,18 +7,18 @@ button,
 input[type="submit"],
 input[type="button"],
 input[type="reset"] {
-  display: inline-block; /* Allows margin/padding */
-  padding: var(--spacing-sm) var(--spacing-lg); /* Default padding */
+  display: inline-block;
+  padding: var(--spacing-sm) var(--spacing-lg);
   font-family: var(--font-primary);
-  font-size: 1rem; /* Default font size */
+  font-size: 1rem;
   font-weight: 500;
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
   vertical-align: middle;
   cursor: pointer;
-  user-select: none; /* Prevent text selection */
-  border: var(--border-width) solid transparent; /* Base border */
+  user-select: none;
+  border: var(--border-width) solid transparent;
   border-radius: var(--border-radius-md);
   transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
@@ -30,10 +30,18 @@ input[type="reset"] {
     border-radius: var(--border-radius-sm);
 }
 
+/* Extra Small button variant */
+.btn-xs {
+    padding: calc(var(--spacing-xs) / 2) var(--spacing-xs); /* Even smaller padding */
+    font-size: 0.75rem; /* Smaller font */
+    line-height: 1.3;
+    border-radius: var(--border-radius-sm);
+}
+
 
 /* Default Button Style (Primary) */
 .btn,
-button[type="submit"], /* Apply default styles to submit buttons too */
+button[type="submit"],
 input[type="submit"] {
   color: var(--text-color-light);
   background-color: var(--primary-blue);
@@ -43,7 +51,7 @@ input[type="submit"] {
 .btn:hover,
 button[type="submit"]:hover,
 input[type="submit"]:hover {
-  background-color: #2c79c1; /* Darker blue */
+  background-color: #2c79c1;
   border-color: #2a72b5;
   color: var(--text-color-light);
   text-decoration: none;
@@ -52,7 +60,7 @@ input[type="submit"]:hover {
 /* Secondary Button Style */
 .btn-secondary {
   color: var(--dark-gray);
-  background-color: #e9ecef; /* Light gray */
+  background-color: #e9ecef;
   border-color: #ced4da;
 }
 .btn-secondary:hover {
@@ -68,19 +76,19 @@ input[type="submit"]:hover {
   border-color: var(--accent-orange);
 }
 .btn-accent-orange:hover {
-  background-color: #e66a31; /* Darker orange */
+  background-color: #e66a31;
   border-color: #d9602a;
   color: var(--text-color-light);
 }
 
 /* Accent Button Style (Green) */
 .btn-accent-green {
-  color: var(--text-color-light); /* Changed to light text */
+  color: var(--text-color-light);
   background-color: var(--accent-green);
   border-color: var(--accent-green);
 }
 .btn-accent-green:hover {
-  background-color: #8cc021; /* Darker green */
+  background-color: #8cc021;
   border-color: #81b31e;
   color: var(--text-color-light);
 }
@@ -112,15 +120,14 @@ input[type="submit"]:hover {
   text-decoration: underline;
 }
 
-/* Dropdown Button (from original dashboard) */
+/* Dropdown Button */
 .dropbtn {
   background-color: var(--medium-gray);
   color: var(--text-color-light);
-  /* Inherits base padding/font-size unless overridden by .btn-sm */
   border: none;
   cursor: pointer;
 }
-.dropbtn.btn-sm { /* Apply small styles if class is added */
+.dropbtn.btn-sm {
     padding: var(--spacing-xs) var(--spacing-sm);
     font-size: 0.875rem;
 }
@@ -144,17 +151,17 @@ input[type="submit"]:hover {
 .dropdown-content button:hover {
   background-color: #e9ecef;
 }
-.dropdown-content button.text-danger { /* Style for danger text in dropdown */
+.dropdown-content button.text-danger {
     color: var(--danger-color);
     font-weight: 500;
 }
 .dropdown-content button.text-danger:hover {
-    background-color: rgba(220, 53, 69, 0.1); /* Light red background */
+    background-color: rgba(220, 53, 69, 0.1);
 }
 
 
 /* Specific button overrides */
-.logout-btn { /* For main logout button if not in nav */
+.logout-btn {
   background-color: var(--accent-orange);
   border-color: var(--accent-orange);
 }
@@ -163,15 +170,15 @@ input[type="submit"]:hover {
   border-color: #d9602a;
 }
 
-.learn-more-btn { /* Home page button */
-  background-color: var(--accent-orange); /* Changed to orange */
+.learn-more-btn {
+  background-color: var(--accent-orange);
   border-color: var(--accent-orange);
-  border-radius: 50px; /* Pill shape */
+  border-radius: 50px;
   padding: var(--spacing-sm) var(--spacing-xl);
   font-weight: 600;
 }
 .learn-more-btn:hover {
-  background-color: #e66a31; /* Darker orange */
+  background-color: #e66a31;
   border-color: #d9602a;
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
@@ -184,13 +191,14 @@ input[type="submit"]:hover {
     text-decoration: none;
 }
 
-/* NEW: Follow/Unfollow/View Buttons */
+/* Updated Follow/Unfollow/View Buttons */
 .btn-follow,
 .btn-unfollow,
 .btn-view-details {
-    padding: var(--spacing-xs) var(--spacing-sm); /* Smaller padding */
-    font-size: 0.8rem; /* Smaller font */
-    line-height: 1.4; /* Adjust line height */
+    /* Apply .btn-xs styles by default */
+    padding: calc(var(--spacing-xs) / 2) var(--spacing-xs);
+    font-size: 0.75rem;
+    line-height: 1.3;
     border-radius: var(--border-radius-sm);
 }
 
@@ -206,7 +214,7 @@ input[type="submit"]:hover {
 }
 
 .btn-unfollow {
-    background-color: var(--accent-orange); /* Use orange for unfollow */
+    background-color: var(--accent-orange);
     border-color: var(--accent-orange);
     color: var(--text-color-light);
 }
@@ -226,4 +234,3 @@ input[type="submit"]:hover {
     border-color: #6e6e6e;
     color: var(--text-color-light);
 }
-

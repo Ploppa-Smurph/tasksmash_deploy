@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block head %}
+<title>{{ profile_user.username }}'s Profile - TaskSmash</title>
+
+{% endblock %}
+
+{% block body %}
+<section class="App Content content-container profile-page">
+    <div class="profile-header">
+        {% if profile_user.avatar_url %}
+            <img src="{{ profile_user.avatar_url }}" alt="{{ profile_user.username }}'s Avatar" class="profile-avatar" onerror='this.onerror=null; this.src="{{ url_for('static', filename='images/default_avatar.png') }}";'>
+        {% else %}
+            <img src="{{ url_for('static', filename='images/default_avatar.png') }}" alt="Default Avatar" class="profile-avatar">
+        {% endif %}
+        <div class="profile-info">
+            <h1>{{ profile_user.username }}</h1>
+            <p class="member-since">Member since: {{ profile_user.member_since.strftime('%B %Y') }}</p>
+            {% if profile_user.bio %}
+                <p class="profile-bio">{{ profile_user.bio }}</p>
+            {% else %}
+                <p class="profile-bio"><em>No bio provided.</em></p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="profile-actions">
+        {% if current_user.is_authenticated %}
+            {% if current_user.id == profile_user.id %}
+                <a href="{{ url_for('main.edit_profile') }}" class="btn btn-secondary">Edit Profile</a>
+            {% else %}
+                {% if current_user.is_following(profile_user) %}
+                    <form action="{{ url_for('main.unfollow_user', username=profile_user.username) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-unfollow">Unfollow</button>
+                    </form>
+                {% else %}
+                    <form action="{{ url_for('main.follow_user', username=profile_user.username) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-follow">Follow</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <div class="profile-section">
+        <h2>Tasks</h2>
+        {% if tasks and tasks|length > 0 %}
+            <ul class="profile-task-list">
+                {% for task in tasks %}
+                    <li>
+                        <strong>{{ task.content }}</strong>
+                        <span class="task-meta">
+                            (Added: {{ task.created_at.strftime('%Y-%m-%d') }})
+                            {% if task.due_date %}
+                                <span class="due-date {% if task.is_overdue %}overdue{% endif %}">
+                                    Due: {{ task.due_date.strftime('%Y-%m-%d') }}
+                                </span>
+                            {% endif %}
+                            {% if task.completed %}
+                                <span style="color: var(--success-color);">(Completed)</span>
+                            {% endif %}
+                        </span>
+                        <br>
+                        <a href="{{ url_for('todo.view_task', task_id=task.id) }}" class="btn btn-xs btn-view-details" style="margin-top: 5px;">View Details</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>{{ profile_user.username }} hasn't shared any tasks yet, or their tasks are private.</p>
+        {% endif %}
+    </div>
+
+    <div class="profile-section">
+        <h2>Achievements</h2>
+        {% if achievements and achievements|length > 0 %}
+            <ul class="profile-achievements-list">
+                {% for achievement in achievements %}
+                    <li><strong>{{ achievement.name }}</strong>: {{ achievement.description }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>{{ profile_user.username }} has not unlocked any achievements yet.</p>
+        {% endif %}
+    </div>
+
+</section>
+{% endblock %}
