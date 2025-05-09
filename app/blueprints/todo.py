@@ -1,16 +1,20 @@
 # app/blueprints/todo.py
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort, current_app
-from app.extensions import db
-from app.models import User, Todo # Import necessary models
 from flask_login import login_required, current_user
-from app.utils.achievements import evaluate_achievements, award_achievement # Import from utils
-from app.forms import EditTaskForm # Import relevant form
+from app.extensions import db
+from app.models import User, Todo, Comment # Ensure Comment is imported
+from app.utils.achievements import evaluate_achievements # Removed award_achievement as it's handled within evaluate
+from app.forms import EditTaskForm
 
-todo_bp = Blueprint('todo', __name__, url_prefix='/todo') # Optional url prefix
+# Define the blueprint
+todo_bp = Blueprint('todo', __name__, url_prefix='/todo')
 
-@todo_bp.route("/add", methods=["POST"]) # Matches original route, maybe change prefix later
+# --- ToDo Routes ---
+
+@todo_bp.route("/add", methods=["POST"])
 @login_required
 def add_todo():
+    """Adds a new task for the current user."""
     content = request.form.get("content")
     if not content or len(content) > 200: # Basic validation
         flash("Task content is required and must be max 200 characters.", "error")
@@ -21,8 +25,8 @@ def add_todo():
     try:
         db.session.commit()
         flash("Task added!", "success")
-        evaluate_achievements(current_user) # Evaluate after commit
-        db.session.commit() # Commit again if achievements were added
+        # Evaluate achievements after successful commit
+        evaluate_achievements(current_user)
     except Exception as e:
         db.session.rollback()
         flash("Error adding task.", "error")
@@ -33,41 +37,41 @@ def add_todo():
 @todo_bp.route("/edit/<int:id>", methods=["GET", "POST"])
 @login_required
 def edit_todo(id):
-    # Consider using first_or_404 for cleaner not found handling
+    """Edits an existing task owned by the current user."""
+    # Get the task or return 404, ensuring the current user owns it
     task = Todo.query.filter_by(id=id, user_id=current_user.id).first_or_404()
-    # The above query ensures user owns the task
 
-    form = EditTaskForm(obj=task) # Pre-populate form
+    form = EditTaskForm(obj=task) # Pre-populate form with task data
     if form.validate_on_submit():
         task.content = form.content.data
         task.edit_count += 1
         try:
-            db.session.commit()
+            db.session.commit() # Commit changes first
             flash("Task updated!", "success")
-            # Check achievement after successful commit
-            if task.edit_count >= 3:
-                 evaluate_achievements(current_user) # Let evaluate handle the specific check
-                 db.session.commit() # Commit again if achievement added
+            # Evaluate achievements after successful commit
+            evaluate_achievements(current_user)
             return redirect(url_for("main.dashboard"))
         except Exception as e:
             db.session.rollback()
             flash("Error updating task.", "error")
             current_app.logger.error(f"Edit task error: {e}")
-            
-    # If GET or validation failed
+
+    # Render the edit form on GET request or if validation fails
     return render_template("edit.html", task=task, form=form)
 
 @todo_bp.route("/delete/<int:id>", methods=["POST"])
 @login_required
 def delete_todo(id):
+    """Deletes a task owned by the current user."""
     task = Todo.query.filter_by(id=id, user_id=current_user.id).first_or_404()
-    # Query ensures user owns the task
 
     try:
-        # Need to handle related comments if necessary, cascade should handle it based on model setup
+        # Cascade delete should handle related comments based on model relationship settings
         db.session.delete(task)
         db.session.commit()
         flash("Task deleted.", "success")
+        # Optionally, re-evaluate achievements if deleting affects completion stats
+        # evaluate_achievements(current_user)
     except Exception as e:
         db.session.rollback()
         flash("Error deleting task.", "error")
@@ -75,21 +79,21 @@ def delete_todo(id):
 
     return redirect(url_for("main.dashboard"))
 
-@todo_bp.route('/complete/<int:task_id>', methods=['POST']) # Renamed for clarity
+@todo_bp.route('/complete/<int:task_id>', methods=['POST'])
 @login_required
 def complete_task(task_id):
+    """Marks a task owned by the current user as complete."""
     task = Todo.query.filter_by(id=task_id, user_id=current_user.id).first_or_404()
-    # Query ensures user owns the task
 
     if task.completed:
         flash("Task already marked as complete.", "info")
     else:
         task.completed = True
         try:
-            db.session.commit()
+            db.session.commit() # Commit completion first
             flash("Task marked as complete!", "success")
-            evaluate_achievements(current_user) # Check achievements after commit
-            db.session.commit() # Commit again if achievement added
+            # Evaluate achievements after successful commit
+            evaluate_achievements(current_user)
         except Exception as e:
             db.session.rollback()
             flash("Error completing task.", "error")
@@ -97,21 +101,28 @@ def complete_task(task_id):
 
     return redirect(url_for('main.dashboard'))
 
-# Route to view a single task might fit better here than in comments blueprint
+
 @todo_bp.route("/view/<int:task_id>")
 @login_required
 def view_task(task_id):
-    task = Todo.query.options(db.joinedload(Todo.user),
-                              db.joinedload(Todo.comments).joinedload(Comment.user),
-                              db.joinedload(Todo.comments).joinedload(Comment.replies))\
-                     .get_or_404(task_id)
-                     
-    # Basic permission check (can current user view this task?)
-    # Example: Only owner or follower can view? Or all logged-in users?
-    # Add more sophisticated checks if needed. Here, we just require login.
+    """Displays the details page for a single task."""
+    # Eager load necessary relationships for the template, excluding dynamic 'replies'
+    task = Todo.query.options(
+                db.joinedload(Todo.user),                           # Eager load the task's author
+                db.joinedload(Todo.comments).joinedload(Comment.user) # Eager load comments and their authors
+            ).get_or_404(task_id)
 
-    # Prepare comments/replies in a structured way if needed for the template
-    # Or handle nesting directly in the template.
-    top_level_comments = [c for c in task.comments if c.parent_id is None]
+    # Add permission checks here if needed (e.g., only owner or followers can view?)
+    # if task.user_id != current_user.id and not current_user_is_following(task.user_id):
+    #     abort(403) # Example permission check
 
-    return render_template("task.html", task=task, comments=top_level_comments) # Pass only top-level comments maybe?
+    # Get top-level comments and sort them (replies will be loaded dynamically in template)
+    top_level_comments = sorted(
+        [c for c in task.comments if c.parent_id is None],
+        key=lambda x: x.created_at # Sort by creation time
+    )
+
+    # Note: The template will need to handle iterating through comment.replies,
+    # which will trigger additional queries due to lazy='dynamic'.
+    return render_template("task.html", task=task, comments=top_level_comments)
+

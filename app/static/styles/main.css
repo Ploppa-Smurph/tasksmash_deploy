@@ -1,0 +1,19 @@
+/* static/styles/main.css */
+/* Import all modular CSS files in the desired order */
+
+@import url('variables.css'); /* Define variables first */
+@import url('global.css');    /* Apply global resets and base styles */
+@import url('layout.css');    /* Define layout containers */
+@import url('nav.css');       /* Style the navigation */
+@import url('buttons.css');   /* Style buttons */
+@import url('forms.css');     /* Style forms */
+@import url('home.css');      /* Styles for the home/landing page */
+@import url('dashboard.css'); /* Styles for the dashboard */
+@import url('auth.css');      /* Styles for auth pages */
+/* Add imports for other specific page CSS files if created */
+@import url('responsive.css');/* Apply responsive overrides last */
+
+/* Add any final utility classes here if needed */
+.hidden {
+    display: none;
+}

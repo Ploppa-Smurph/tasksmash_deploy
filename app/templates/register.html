@@ -8,7 +8,6 @@
 <section class="App Content">
     <h1>Create Account</h1>
 
-    <!-- Display flash messages conditionally -->
     {% with messages = get_flashed_messages(with_categories=True) %}
       {% if messages %}
         <ul>
@@ -19,7 +18,7 @@
       {% endif %}
     {% endwith %}
 
-    <form method="POST" action="{{ url_for('register') }}">
+    <form method="POST" action="{{ url_for('auth.register') }}">
         {{ form.hidden_tag() }}
         <p>
             {{ form.username.label }}<br>

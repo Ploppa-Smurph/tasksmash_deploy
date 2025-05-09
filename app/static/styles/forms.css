@@ -1,0 +1,124 @@
+/* static/styles/forms.css */
+/* Styles for forms and form elements */
+
+form {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  /* Form groups for labels and inputs */
+  form p { /* Assuming paragraphs are used as form groups */
+    margin-bottom: var(--spacing-md);
+  }
+  
+  label {
+    display: block; /* Ensure label is on its own line */
+    margin-bottom: var(--spacing-sm);
+    font-weight: 500;
+    color: var(--dark-gray);
+  }
+  
+  input[type="text"],
+  input[type="password"],
+  input[type="email"],
+  textarea {
+    display: block; /* Take full width */
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 1rem;
+    font-family: var(--font-primary);
+    line-height: 1.5;
+    color: var(--dark-gray);
+    background-color: #fff; /* White background */
+    background-clip: padding-box;
+    border: var(--border-width) solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+  
+  input[type="text"]:focus,
+  input[type="password"]:focus,
+  input[type="email"]:focus,
+  textarea:focus {
+    border-color: var(--primary-blue);
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(60, 145, 230, 0.25); /* Blue focus glow */
+  }
+  
+  textarea {
+    min-height: 80px; /* Give textareas some default height */
+    resize: vertical; /* Allow vertical resize */
+  }
+  
+  /* Form-specific containers */
+  .login-container, /* From original CSS */
+  .register-container, /* Add class to register template */
+  .edit-box, /* From original CSS */
+  .reset-request-container, /* Add class */
+  .reset-password-container { /* Add class */
+    max-width: 450px; /* Consistent width for auth forms */
+    margin: var(--spacing-xxl) auto; /* More top margin */
+    padding: var(--spacing-xl);
+    background-color: #ffffff;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-lg);
+    text-align: center; /* Center form content */
+  }
+  
+  .login-container h1,
+  .register-container h1,
+  .edit-box h1,
+  .reset-request-container h1,
+  .reset-password-container h1 {
+    margin-bottom: var(--spacing-lg);
+  }
+  
+  .login-container .logo,
+  .register-container .logo { /* Style logo if present on auth pages */
+      max-width: 150px;
+      margin-bottom: var(--spacing-md);
+  }
+  
+  .login-container p,
+  .register-container p,
+  .reset-request-container p,
+  .reset-password-container p {
+      text-align: left; /* Align labels/inputs left */
+  }
+  .login-container button[type="submit"],
+  .register-container button[type="submit"],
+  .edit-box button[type="submit"],
+  .reset-request-container button[type="submit"],
+  .reset-password-container button[type="submit"] {
+      width: 100%; /* Make submit buttons full width */
+      margin-top: var(--spacing-sm);
+  }
+  
+  /* Form validation errors */
+  .error { /* Class for error messages below fields */
+    color: var(--danger-color);
+    font-size: 0.875em;
+    margin-top: var(--spacing-xs);
+  }
+  input.invalid, textarea.invalid { /* Add class via JS or server-side if needed */
+      border-color: var(--danger-color);
+  }
+  input.invalid:focus, textarea.invalid:focus {
+      border-color: var(--danger-color);
+      box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+  }
+  
+  /* Task input specific */
+  .task-input-container {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+  }
+  .task-input-container input[type="text"] {
+    flex-grow: 1;
+    margin-bottom: 0; /* Remove bottom margin in flex container */
+  }
+  .task-input-container button {
+    flex-shrink: 0; /* Prevent button from shrinking */
+  }
+  
+  

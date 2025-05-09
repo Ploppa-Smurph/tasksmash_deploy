@@ -1,8 +1,9 @@
 # app/__init__.py
-import os # Keep necessary imports if used within create_app
+import os
 from flask import Flask
 from config import Config # Assumes config.py is in root
 from .extensions import db, login_manager, migrate # Import from extensions
+from datetime import datetime # <<<--- ADDED IMPORT
 
 # It's generally cleaner to define blueprint instances in their respective files (e.g., app/blueprints/main.py)
 # and import the instances here, rather than importing the entire routes module if it gets large.
@@ -123,6 +124,13 @@ def create_app(config_class=Config):
         """CLI command to seed/update achievements defined in models.py."""
         # Flask CLI provides app context automatically when running this command
         seed_achievements_command_internal()
+
+    # --- ADD CONTEXT PROCESSOR --- <<<--- ADDED SECTION
+    @app.context_processor
+    def inject_now():
+        """Inject current datetime into all templates."""
+        return {'now': datetime.utcnow()} # Use utcnow() for consistency
+    # -----------------------------
 
     # No need to explicitly import models here if blueprints import them,
     # as SQLAlchemy/Migrate will discover them through the imports when

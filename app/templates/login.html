@@ -8,7 +8,7 @@
 <section class="login-container">
     <img src="{{ url_for('static', filename='images/taskSmash_background.png') }}" alt="TaskSmash Logo" class="logo">
     <h1>Login</h1>
-    <form method="POST" action="{{ url_for('login') }}">
+    <form method="POST" action="{{ url_for('auth.login') }}">
         {{ login_form.hidden_tag() }}
         <p>
             {{ login_form.username.label }}<br>
@@ -28,12 +28,12 @@
     </form>
     
     <p>
-        <a href="{{ url_for('reset_request') }}">Forgot your password?</a>
+        <a href="{{ url_for('auth.reset_request') }}">Forgot your password?</a>
     </p>
 
     {% if show_create_account %}
     <p>
-        <a href="{{ url_for('register') }}" class="btn-create-account">Create New Account</a>
+        <a href="{{ url_for('auth.register') }}" class="btn-create-account">Create New Account</a>
     </p>
     {% endif %}
 </section>

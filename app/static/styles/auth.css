@@ -1,0 +1,215 @@
+/* static/styles/dashboard.css */
+/* Styles specific to the dashboard page */
+
+/* Task Cards */
+.task-card {
+    border: var(--border-width) solid var(--border-color);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    border-radius: var(--border-radius-md);
+    background: #fdfdff; /* Slightly off-white */
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition-fast);
+  }
+  .task-card:hover {
+      box-shadow: var(--shadow-md);
+  }
+  
+  .task-card p {
+    margin: 0 0 var(--spacing-sm) 0; /* Consistent spacing */
+  }
+  .task-card p strong {
+      color: var(--primary-blue); /* Highlight user */
+  }
+  
+  .task-buttons {
+    display: flex;
+    flex-wrap: wrap; /* Allow buttons to wrap */
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-sm);
+    align-items: center; /* Align items vertically */
+  }
+  
+  /* Comment toggle/form within task card */
+  .task-card label.btn { /* Style the label like a button */
+      padding: var(--spacing-xs) var(--spacing-sm);
+      font-size: 0.9rem;
+      background-color: var(--medium-gray);
+  }
+  .task-card label.btn:hover {
+      background-color: #777;
+  }
+  
+  .task-card input[type="checkbox"] { /* Hide the actual checkbox */
+      display: none;
+  }
+  
+  .task-card .comment-form {
+    display: none; /* Hidden by default */
+    width: 100%; /* Take full width */
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+    display: flex; /* Use flex for input/button */
+    gap: var(--spacing-sm);
+  }
+  
+  /* Show form when checkbox is checked */
+  .task-card input[type="checkbox"]:checked + label + .comment-form {
+    display: flex;
+  }
+  
+  .task-card .comment-form input[type="text"] {
+      flex-grow: 1;
+      margin-bottom: 0;
+  }
+  .task-card .comment-form button {
+      flex-shrink: 0;
+  }
+  
+  
+  /* Comments List */
+  .comments-list {
+    margin-top: var(--spacing-md);
+    padding-left: var(--spacing-sm); /* Slight indent */
+    list-style-type: none;
+  }
+  
+  .comment-item {
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-sm);
+    background-color: #f8f9fa; /* Light background for comments */
+    border-radius: var(--border-radius-sm);
+    border-left: 3px solid var(--light-blue); /* Accent border */
+  }
+  .comment-item p {
+      margin-bottom: var(--spacing-xs);
+      font-size: 0.95rem;
+  }
+  .comment-item strong {
+      color: var(--dark-gray);
+  }
+  
+  .comment-item details summary { /* Style the reply toggle */
+      cursor: pointer;
+      color: var(--primary-blue);
+      font-size: 0.9em;
+      margin-top: var(--spacing-sm);
+      display: inline-block; /* Prevent full width */
+  }
+  .comment-item details summary:hover {
+      text-decoration: underline;
+  }
+  .comment-item details form {
+      margin-top: var(--spacing-sm);
+  }
+  .comment-item details textarea {
+      width: 100%;
+      min-height: 40px;
+      font-size: 0.9em;
+      padding: var(--spacing-xs);
+      margin-bottom: var(--spacing-xs);
+  }
+  .comment-item details button {
+      padding: var(--spacing-xs) var(--spacing-sm);
+      font-size: 0.85em;
+  }
+  
+  .replies {
+    margin-left: var(--spacing-lg); /* Indent replies */
+    margin-top: var(--spacing-sm);
+    border-left: 2px solid var(--border-color);
+    padding-left: var(--spacing-md);
+  }
+  .reply-item {
+      background-color: #eef2f7; /* Slightly different bg for replies */
+      border-left-color: var(--accent-orange); /* Different accent */
+  }
+  
+  
+  /* Your Tasks List */
+  .task-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .task-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) 0;
+    border-bottom: 1px dashed var(--border-color); /* Separator */
+    margin-bottom: var(--spacing-sm);
+  }
+  .task-item:last-child {
+      border-bottom: none;
+  }
+  
+  .task-item div:first-child { /* Task content */
+      flex-grow: 1;
+      margin-right: var(--spacing-md);
+  }
+  .task-item small {
+      color: var(--medium-gray);
+      font-size: 0.85em;
+      margin-left: var(--spacing-sm);
+  }
+  
+  /* Dropdown for task options */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0; /* Align to the right */
+    background-color: #ffffff;
+    min-width: 160px;
+    box-shadow: var(--shadow-md);
+    z-index: 1;
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+    overflow: hidden; /* Ensure rounded corners apply */
+  }
+  
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+  
+  .dropdown-content form {
+      margin: 0; /* Remove margin from forms inside dropdown */
+  }
+  .dropdown-content button {
+      width: 100%;
+      text-align: left;
+      border-radius: 0;
+      padding: var(--spacing-sm) var(--spacing-md);
+      background: none;
+      border: none;
+      color: var(--dark-gray);
+      font-size: 0.9rem;
+  }
+  .dropdown-content button:hover {
+      background-color: #f1f1f1;
+  }
+  
+  /* Achievements Section */
+  .achievements ul {
+      list-style-type: none;
+      padding: 0;
+  }
+  .achievements li {
+      margin-bottom: var(--spacing-sm);
+      padding-left: var(--spacing-md);
+      position: relative;
+  }
+  .achievements li::before { /* Add a simple marker */
+      content: "🏆"; /* Or use a different icon/character */
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-size: 0.9em;
+  }
+  

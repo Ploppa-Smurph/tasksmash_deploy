@@ -1,0 +1,122 @@
+/* static/styles/home.css */
+/* Styles specific to the landing page (index.html) */
+
+.homebody {
+  /* REMOVED min-height: 100vh; */
+  /* REMOVED margin-top: -70px; */
+  /* REMOVED padding-top: calc(70px + var(--spacing-lg)); */
+  /* Ensure it behaves like a standard block within main-content-area */
+  width: 100%;
+  min-height: calc(100vh - 70px - 58px - (2 * var(--spacing-lg))); /* Adjusted: Viewport - Nav - Footer - Main Padding */
+  /* Note: 58px is an estimate for footer height, adjust if needed */
+  /* Or simply remove min-height if background is applied to main-content-area instead */
+  font-family: var(--font-primary);
+  display: flex;
+  align-items: center; /* Vertically center */
+  justify-content: center; /* Horizontally center */
+  text-align: center;
+  padding: var(--spacing-lg); /* Keep internal padding */
+  /* Apply a background gradient using the new palette */
+  background: linear-gradient(135deg, var(--primary-blue), var(--light-blue));
+  color: var(--text-color-light); /* Light text for contrast */
+  overflow: hidden; /* Prevent scrollbars if content overflows slightly */
+}
+
+.homemain-content {
+  max-width: 700px;
+  width: 100%; /* Allow shrinking on small screens */
+  padding: var(--spacing-xl) var(--spacing-lg); /* Generous padding */
+  /* Semi-transparent dark background for text readability over gradient */
+  background-color: rgba(52, 46, 55, 0.75); /* var(--dark-gray) with alpha */
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  animation: fadeInHome 0.8s ease-out forwards; /* Simple fade-in */
+}
+
+/* Define the animation */
+@keyframes fadeInHome {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.homemain-content .logo {
+  max-width: 150px; /* Adjust size as needed */
+  height: auto; /* Maintain aspect ratio */
+  margin-bottom: var(--spacing-md);
+}
+
+.homemain-content .homeh1 {
+  font-size: 3.0rem; /* Responsive base size */
+  color: var(--light-bg); /* Use near-white */
+  margin-bottom: var(--spacing-xs);
+  font-weight: 600;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); /* Subtle text shadow */
+}
+
+.homemain-content .homeh3 {
+  font-size: 1.6rem; /* Responsive base size */
+  color: var(--accent-green); /* Use accent green */
+  margin-bottom: var(--spacing-sm);
+  font-weight: 500;
+}
+
+.homemain-content .homeh4 {
+  font-size: 1.2rem; /* Responsive base size */
+  color: var(--light-bg);
+  margin-bottom: var(--spacing-md);
+  font-weight: 400;
+  opacity: 0.9; /* Slightly less emphasis */
+}
+
+.homemain-content .homeh6 {
+  font-size: 1.0rem; /* Responsive base size */
+  color: var(--light-blue); /* Use light blue */
+  margin-bottom: var(--spacing-lg);
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+}
+
+/* Learn more button styles are primarily in buttons.css */
+/* Ensure link inside has correct color */
+.homemain-content .learn-more-btn {
+    margin-top: var(--spacing-md);
+    background-color: var(--accent-orange); /* Use orange accent */
+    border-color: var(--accent-orange);
+}
+.homemain-content .learn-more-btn:hover {
+    background-color: #e66a31; /* Darker orange */
+    border-color: #d9602a;
+}
+
+.homemain-content .learn-more-btn a {
+    color: var(--text-color-light); /* Ensure text is light */
+    text-decoration: none;
+}
+.homemain-content .learn-more-btn a:hover {
+    text-decoration: none;
+}
+
+/* Responsive adjustments specifically for home page elements */
+@media (max-width: 768px) {
+  .homemain-content .homeh1 { font-size: 2.5rem; }
+  .homemain-content .homeh3 { font-size: 1.4rem; }
+  .homemain-content .homeh4 { font-size: 1.1rem; }
+  .homemain-content .homeh6 { font-size: 0.9rem; }
+  .homemain-content { padding: var(--spacing-lg); }
+  .homebody { min-height: calc(100vh - 60px - 58px - (2 * var(--spacing-md))); } /* Adjust for smaller nav/padding */
+
+}
+
+@media (max-width: 480px) {
+  .homemain-content .homeh1 { font-size: 2.0rem; }
+  .homemain-content .homeh3 { font-size: 1.2rem; }
+  .homemain-content .logo { max-width: 120px; }
+}

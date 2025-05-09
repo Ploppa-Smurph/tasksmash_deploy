@@ -1,0 +1,99 @@
+/* static/styles/layout.css */
+/* Styles for main layout containers */
+
+.main-content-area {
+  flex-grow: 1; /* Allows main content to fill space for sticky footer */
+  padding: var(--spacing-lg) 0; /* Add padding top/bottom */
+  /* ADDED: Add padding-top here to account for fixed navbar height (adjust 70px if needed) */
+  padding-top: 70px;
+}
+
+/* Container for general page content */
+.App.Content, /* Selects elements with both classes */
+.content-container { /* Add this class where needed */
+  max-width: 1140px; /* Standard container width for desktop */
+  margin-left: auto;
+  margin-right: auto;
+  padding: var(--spacing-lg) var(--spacing-md); /* Vertical and horizontal padding */
+  background-color: var(--light-bg); /* Keep light background */
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--spacing-xl); /* Space below content */
+}
+
+/* Specific page containers */
+.about-section,
+.edit-task-section, /* Renamed from .edit-task */
+.login-section, /* Renamed from .login-container */
+.register-section,
+.reset-request-section,
+.reset-password-section,
+.task-details-section {
+  max-width: 760px; /* Smaller max-width for forms/text pages */
+  margin: var(--spacing-xl) auto; /* Center these smaller containers */
+  padding: var(--spacing-xl);
+  background-color: #ffffff; /* White background for contrast */
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+/* Dashboard specific layout */
+.dashboard-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-lg); /* Use gap for spacing */
+  max-width: 1400px; /* Wider for dashboard */
+  margin: var(--spacing-lg) auto;
+  padding: 0; /* Remove padding if sections have their own */
+  background: none; /* No background/shadow on the container itself */
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.dashboard-section {
+  background-color: #ffffff; /* White background for sections */
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-lg);
+  flex: 1 1 350px; /* Allow sections to grow and shrink, base width */
+  min-width: 300px;
+  margin-bottom: var(--spacing-lg); /* Add space below sections */
+}
+
+.section-heading {
+  font-size: 1.5rem; /* Font size for section headings */
+  color: var(--dark-gray);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Dashboard Grid Layout Container */
+.dashboard-grid-container {
+  display: grid;
+  grid-template-areas:
+    "personal personal"
+    "followed popular"
+    "achievements achievements";
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: var(--spacing-lg);
+  width: 100%;
+}
+/* Assign sections to grid areas */
+.personal-tasks-section { grid-area: personal; }
+.followed-tasks-section { grid-area: followed; }
+.popular-tasks-section { grid-area: popular; }
+.achievements-section { grid-area: achievements; }
+
+/* General Dashboard Section Styling */
+.dashboard-section {
+  background-color: #ffffff;
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-lg);
+  flex: none;
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--border-color);
+}

@@ -4,20 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles/styles.css') }}">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}">
+    
     {% block head %}{% endblock %}
 </head>
 <body>
-    <nav>
-        <ul>
-          <li class="nav"><a href="{{ url_for('landing_page') }}">Home</a></li>
-          <li class="nav"><a href="{{ url_for('register') }}">Create Account</a></li>
-          <li class="nav"><a href="{{ url_for('login') }}">Login</a></li>
-          <li class="nav"><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
-          <li class="nav"><a href="{{ url_for('about') }}">About</a></li>
-        </ul>
-      </nav>
-      
-    {% block body %}{% endblock %}
-</body>
+    <div class="page-wrapper" style="display: flex; flex-direction: column; min-height: 100vh;">
+
+        <nav>
+            <a href="{{ url_for('main.landing_page') }}" class="nav-brand">TaskSmash</a>
+            <ul>
+              {% if not current_user.is_authenticated %}
+              <li class="nav"><a href="{{ url_for('auth.register') }}">Create Account</a></li>
+              <li class="nav"><a href="{{ url_for('auth.login') }}">Login</a></li>
+              {% endif %}
+              
+              {% if current_user.is_authenticated %}
+              {% if request.endpoint != 'main.dashboard' %}
+              <li class="nav"><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+              {% endif %}
+              {% endif %}
+              
+              <li class="nav"><a href="{{ url_for('main.about') }}">About</a></li>
+              
+              {% if current_user.is_authenticated %}
+              <li>
+                  <form action="{{ url_for('auth.logout') }}" method="POST" style="display: inline;">
+                      <button type="submit" class="logout-btn-nav">Logout</button>
+                  </form>
+              </li>
+              {% endif %}
+            </ul>
+          </nav>
+          
+        <main class="main-content-area" style="flex-grow: 1;">
+            <div class="flash-container" style="max-width: 1140px; margin: 0 auto; padding: 0 var(--spacing-md);">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    <ul class="flashes">
+                      {% for category, message in messages %}
+                        {% if category != 'achievement' %} {# Achievements handled by toast #}
+                            <li class="{{ category }}">{{ message }}</li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                  {% endif %}
+                {% endwith %}
+            </div>
+            {% block body %}{% endblock %}
+        </main>
+
+        <footer style="background-color: var(--dark-gray); color: var(--text-color-light); text-align: center; padding: var(--spacing-md); margin-top: auto;">
+            <p>&copy; {{ now.year }} TaskSmash. All rights reserved.</p>
+            </footer>
+
+    </div> </body>
 </html>

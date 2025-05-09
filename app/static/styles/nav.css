@@ -1,0 +1,78 @@
+/* static/styles/nav.css */
+/* Styles for the navigation bar */
+
+nav {
+    background-color: var(--dark-gray); /* Use dark gray */
+    padding: 0 var(--spacing-lg); /* Vertical padding 0, horizontal spacing */
+    position: fixed;
+    top: 0;
+    left: 0; /* Ensure it starts from the left edge */
+    width: 100%;
+    z-index: 1000;
+    box-shadow: var(--shadow-md);
+    height: 70px; /* Fixed height */
+    display: flex;
+    align-items: center; /* Vertically center items */
+  }
+  
+  nav ul {
+    display: flex;
+    justify-content: flex-end; /* Align links to the right */
+    align-items: center; /* Align items vertically */
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%; /* Take full width */
+  }
+  
+  nav ul li {
+    margin-left: var(--spacing-md); /* Space between links */
+  }
+  
+  /* Add a logo/brand element */
+  nav .nav-brand {
+      margin-right: auto; /* Pushes other items to the right */
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--light-bg);
+      text-decoration: none;
+  }
+  nav .nav-brand:hover {
+      color: var(--accent-green);
+      text-decoration: none;
+  }
+  
+  
+  nav ul li a {
+    color: var(--text-color-light);
+    padding: var(--spacing-sm) var(--spacing-md);
+    text-decoration: none;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+    display: block; /* Make the whole area clickable */
+    border-radius: var(--border-radius-sm);
+    font-weight: 500;
+  }
+  
+  nav ul li a:hover,
+  nav ul li a.active { /* Style for active link if needed */
+    background-color: var(--primary-blue); /* Use primary blue for hover/active */
+    color: var(--text-color-light);
+  }
+  
+  /* Style for the logout button if placed in nav */
+  nav .logout-btn-nav {
+      background: none;
+      border: none;
+      color: var(--accent-orange);
+      padding: var(--spacing-sm) var(--spacing-md);
+      cursor: pointer;
+      font-family: var(--font-primary);
+      font-size: 1em; /* Match link font size */
+      font-weight: 500;
+      transition: color var(--transition-fast);
+  }
+  nav .logout-btn-nav:hover {
+      color: var(--light-bg);
+  }
+  
+  

@@ -1,0 +1,182 @@
+/* static/styles/global.css */
+/* Basic resets and global element styles */
+
+/* Box sizing reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Basic Reset */
+body, h1, h2, h3, h4, h5, h6, p, ul, ol, li, figure, figcaption, blockquote, dl, dd {
+  margin: 0;
+  padding: 0;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+body {
+  font-family: var(--font-primary);
+  /* UPDATED: Set body background to match footer */
+  background-color: var(--dark-gray);
+  color: var(--text-color-dark);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex; /* Use flex for page-wrapper */
+  flex-direction: column;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: var(--spacing-md);
+  font-weight: 600; /* Bolder headings */
+  color: var(--dark-gray); /* Use dark gray for headings */
+}
+
+h1 {
+  font-size: 2.5rem; /* Adjust sizes as needed */
+  text-align: center;
+}
+
+h2 {
+  font-size: 2rem;
+  border-bottom: var(--border-width) solid var(--border-color);
+  padding-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+h3 {
+  font-size: 1.75rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+}
+
+p {
+  margin-bottom: var(--spacing-md);
+}
+
+/* Links */
+a {
+  color: var(--primary-blue); /* Use primary blue for links */
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--accent-orange); /* Use accent orange for hover */
+  text-decoration: underline;
+}
+
+/* Basic Table Styles (if needed) */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--spacing-md);
+}
+
+th, td {
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-align: left;
+  border-bottom: var(--border-width) solid var(--border-color);
+}
+
+th {
+  background-color: #e9ecef; /* Lighter gray for header */
+  font-weight: 600;
+}
+
+tr:hover {
+  background-color: #f8f9fa; /* Very light hover */
+}
+
+/* --- Flash Messages Styling (Overlay) --- */
+.flash-container {
+    position: fixed; /* Position relative to viewport */
+    top: calc(70px + var(--spacing-md)); /* Below navbar (adjust 70px if nav height changes) */
+    left: 50%;
+    transform: translateX(-50%); /* Center horizontally */
+    width: 90%; /* Max width */
+    max-width: 600px; /* Prevent excessive width */
+    z-index: 1050; /* Above most content, below modals */
+    pointer-events: none; /* Allow clicks through the container */
+}
+
+.flashes {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.flashes li {
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-sm); /* Space between multiple flashes */
+  border-radius: var(--border-radius-md);
+  border: none; /* Remove border */
+  color: var(--text-color-light); /* Default light text */
+  box-shadow: var(--shadow-md);
+  opacity: 0; /* Start hidden */
+  animation: flashFadeIn 0.5s ease forwards, flashFadeOut 0.5s ease 3.5s forwards; /* Fade in, pause, fade out */
+  pointer-events: auto; /* Allow interaction with the message itself */
+  position: relative; /* Needed for potential close button */
+}
+
+/* Define fade animations */
+@keyframes flashFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 0.95; transform: translateY(0); } /* Use opacity for semi-transparency */
+}
+@keyframes flashFadeOut {
+    from { opacity: 0.95; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-20px); }
+}
+
+
+/* Specific flash message colors using RGBA for transparency */
+.flashes li.success,
+.flashes li.achievement { /* Treat achievement like success FOR NOW */
+  background-color: rgba(40, 167, 69, 0.85); /* Success green with alpha */
+}
+
+.flashes li.error {
+  background-color: rgba(220, 53, 69, 0.85); /* Danger red with alpha */
+}
+
+.flashes li.info {
+  background-color: rgba(23, 162, 184, 0.85); /* Info cyan with alpha */
+}
+.flashes li.warning {
+  background-color: rgba(255, 193, 7, 0.85); /* Warning yellow with alpha */
+  color: var(--dark-gray); /* Dark text might be better on yellow */
+}
+
+
+/* Achievement Toast (Keep separate if desired, or integrate with flash styles) */
+/* This positions at the bottom-right */
+.achievement-toast {
+  position: fixed;
+  bottom: var(--spacing-xl);
+  right: var(--spacing-xl);
+  background-color: var(--accent-green);
+  color: var(--dark-gray);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  font-weight: bold;
+  z-index: 9999; /* Higher z-index than regular flashes */
+  box-shadow: var(--shadow-lg);
+  animation: slideinToast 0.5s ease, fadeoutToast 0.5s ease 3s forwards;
+}
+
+@keyframes slideinToast {
+  from { transform: translateY(100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fadeoutToast {
+  to { opacity: 0; transform: translateY(100px); }
+}

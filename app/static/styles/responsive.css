@@ -1,0 +1,141 @@
+/* static/styles/responsive.css */
+/* Media queries for responsive design */
+
+/* Tablets and smaller desktops */
+@media (max-width: 992px) {
+  .App.Content,
+  .content-container {
+    max-width: 90%;
+    padding: var(--spacing-lg);
+  }
+
+  /* Adjust dashboard grid for medium screens */
+  .dashboard-grid-container {
+     grid-template-areas: /* Stack personal tasks, then 2 columns, then achievements */
+        "personal personal"
+        "followed popular"
+        "achievements achievements";
+     grid-template-columns: 1fr 1fr; /* Keep two columns */
+     gap: var(--spacing-md); /* Reduce gap */
+  }
+
+  .dashboard-section {
+      padding: var(--spacing-md);
+  }
+  .section-heading {
+      font-size: 1.3rem;
+  }
+
+  nav ul {
+    justify-content: center;
+  }
+  nav .nav-brand {
+      margin-right: var(--spacing-md);
+      margin-left: var(--spacing-md);
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+  body {
+      padding-top: 60px; /* Adjust for potentially smaller navbar */
+  }
+  nav {
+      height: auto;
+      padding: var(--spacing-sm);
+  }
+  nav ul {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  nav ul li {
+    margin: var(--spacing-xs) 0;
+    width: 100%;
+    text-align: center;
+  }
+   nav .nav-brand {
+      margin: 0 0 var(--spacing-sm) 0;
+      text-align: center;
+      width: 100%;
+  }
+  nav .logout-btn-nav {
+      width: 100%;
+      text-align: center;
+      padding: var(--spacing-sm);
+  }
+
+  .App.Content,
+  .content-container,
+  .login-section,
+  .register-section,
+  .edit-box,
+  .reset-request-container,
+  .reset-password-container,
+  .task-details-section {
+    max-width: 95%;
+    padding: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+  }
+
+  /* Stack dashboard grid items vertically on mobile */
+  .dashboard-grid-container {
+     grid-template-areas:
+        "personal"
+        "followed"
+        "popular"
+        "achievements";
+     grid-template-columns: 1fr; /* Single column */
+     gap: var(--spacing-md);
+  }
+
+  .dashboard-section {
+    margin-bottom: var(--spacing-md); /* Add margin back for vertical stacking */
+  }
+
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.5rem; }
+  .section-heading { font-size: 1.2rem; }
+
+
+  .homemain-content {
+      padding: var(--spacing-lg);
+      max-width: 90%;
+  }
+  .homemain-content .homeh1 { font-size: 2.5rem; }
+  .homemain-content .homeh3 { font-size: 1.4rem; }
+  .homemain-content .homeh4 { font-size: 1.1rem; }
+  .homemain-content .homeh6 { font-size: 0.9rem; }
+  .homemain-content .learn-more-btn { font-size: 1rem; padding: var(--spacing-sm) var(--spacing-lg); }
+
+  .task-item {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+  .task-item .dropdown {
+      margin-top: var(--spacing-sm);
+      align-self: flex-start;
+  }
+
+  .task-item-feed {
+      flex-direction: column;
+      align-items: flex-start;
+  }
+   .feed-task-actions {
+       margin-top: var(--spacing-sm);
+       width: 100%; /* Make buttons take more space if needed */
+       justify-content: flex-start;
+   }
+
+
+  .achievement-toast {
+      right: var(--spacing-md);
+      bottom: var(--spacing-md);
+      padding: var(--spacing-sm) var(--spacing-md);
+      font-size: 0.9rem;
+      max-width: 90%; /* Prevent overflow */
+  }
+
+}
